@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Network Dashboard | Topology</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/mesh.css">
+</head>
+<body>
+    <div class="mesh-page">
+        <header class="mesh-header">
+            <div>
+                <a href="/settings" class="mesh-back"><i class="fas fa-chevron-left"></i> Back to Settings</a>
+                <h1><i class="fas fa-project-diagram"></i> Network Dashboard</h1>
+                <p>Live Topology • Towers • Links (Direct / Via Tower) • Inter-Tower</p>
+            </div>
+            <div class="mesh-user">
+                <span>{{ username }}</span>
+                <span class="pill">LIVE</span>
+            </div>
+        </header>
+
+        <div class="mesh-grid">
+            <section class="mesh-card span-3">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-map"></i> Topology Map</h2>
+                    <div class="legend">
+                        <span><i class="dot self"></i> You</span>
+                        <span><i class="dot peer"></i> Peer</span>
+                        <span><i class="dot tower"></i> Tower/Base Station</span>
+                        <span><i class="line direct"></i> Direct</span>
+                        <span><i class="line via"></i> Via Tower</span>
+                        <span><i class="line t2t"></i> Tower-Tower</span>
+                    </div>
+                </div>
+                <div class="mesh-card-body map-wrap">
+                    <svg id="topo-svg" viewBox="0 0 1000 520" preserveAspectRatio="xMidYMid meet"></svg>
+                    <div class="map-info" id="map-info">Loading topology...</div>
+                </div>
+            </section>
+
+            <section class="mesh-card">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-broadcast-tower"></i> Towers</h2>
+                </div>
+                <div class="mesh-card-body">
+                    <div id="tower-list" class="list-block"></div>
+                </div>
+            </section>
+
+            <section class="mesh-card">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-users"></i> Nodes</h2>
+                </div>
+                <div class="mesh-card-body">
+                    <div id="node-list" class="list-block"></div>
+                </div>
+            </section>
+
+            <section class="mesh-card">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-link"></i> Links</h2>
+                </div>
+                <div class="mesh-card-body">
+                    <div id="link-list" class="list-block"></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="/static/mesh_dashboard.js"></script>
+</body>
+</html>

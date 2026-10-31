@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Broadcast | Secure LAN Messenger</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/mesh.css">
+</head>
+<body>
+    <div class="mesh-page">
+        <header class="mesh-header">
+            <div>
+                <a href="/chat" class="mesh-back"><i class="fas fa-chevron-left"></i> Back to Chat</a>
+                <h1><i class="fas fa-tower-broadcast"></i> Broadcast Center</h1>
+                <p>Frequencies, Emergency Broadcast & Tower Controls</p>
+            </div>
+            <div class="mesh-user">
+                <span>{{ username }}</span>
+            </div>
+        </header>
+
+        <div class="mesh-grid">
+            <section class="mesh-card">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-broadcast-tower"></i> Base Station / Tower Mode</h2>
+                </div>
+                <div class="mesh-card-body">
+                    <div class="tower-status" id="tower-status">Loading...</div>
+                    <div class="tower-actions">
+                        <button id="tower-enable" class="mesh-btn primary"><i class="fas fa-satellite-dish"></i> Enable Tower Mode</button>
+                        <button id="tower-disable" class="mesh-btn"><i class="fas fa-power-off"></i> Disable Tower Mode</button>
+                    </div>
+                    <div class="field">
+                        <label>Tower Name</label>
+                        <input id="tower-name" placeholder="e.g. FLOOR-3-TOWER">
+                    </div>
+                    <small class="hint">When enabled, this device can act as a hub/relay for others on LAN. Doesn't affect existing DM traffic.</small>
+                </div>
+            </section>
+
+            <section class="mesh-card">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-radio"></i> Public Frequencies</h2>
+                    <button id="freq-create" class="mesh-btn small"><i class="fas fa-plus"></i> New Frequency</button>
+                </div>
+                <div class="mesh-card-body">
+                    <div id="freq-list" class="freq-list"></div>
+                </div>
+            </section>
+
+            <section class="mesh-card span-2">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-triangle-exclamation"></i> Emergency Broadcast</h2>
+                </div>
+                <div class="mesh-card-body">
+                    <div class="emergency-row">
+                        <input id="emergency-msg" placeholder="Emergency message...">
+                        <button id="emergency-trigger" class="mesh-btn danger"><i class="fas fa-bullhorn"></i> TRIGGER EMERGENCY</button>
+                        <button id="emergency-clear" class="mesh-btn"><i class="fas fa-xmark"></i> Clear</button>
+                    </div>
+                    <div id="emergency-status" class="emergency-live">No active emergency</div>
+                </div>
+            </section>
+
+            <section class="mesh-card">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-diagram-project"></i> Quick Topology</h2>
+                    <a href="/network/dashboard" class="mesh-link">Open Full Dashboard <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="mesh-card-body">
+                    <div id="topo-mini" class="topo-mini">Loading...</div>
+                </div>
+            </section>
+
+            <section class="mesh-card">
+                <div class="mesh-card-head">
+                    <h2><i class="fas fa-network-wired"></i> Manual Peer Find</h2>
+                </div>
+                <div class="mesh-card-body">
+                    <div class="manual-row">
+                        <input id="mp-ip" placeholder="IP (e.g. 192.168.1.105)">
+                        <input id="mp-port" placeholder="Port" value="6667">
+                        <button id="mp-add" class="mesh-btn"><i class="fas fa-plus"></i> Add/Probe</button>
+                    </div>
+                    <small class="hint">Helps when broadcast/multicast is filtered. Existing discovery remains active.</small>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="mesh-modal" id="freq-modal">
+        <div class="mesh-modal-card">
+            <div class="mesh-modal-head">
+                <strong>Create Frequency</strong>
+                <button class="mesh-close" data-close="freq-modal"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="mesh-modal-body">
+                <div class="field">
+                    <label>Frequency Name</label>
+                    <input id="freq-name" placeholder="e.g. Patrol, Workshop">
+                </div>
+                <div class="field">
+                    <label>Description</label>
+                    <input id="freq-desc" placeholder="Optional">
+                </div>
+            </div>
+            <div class="mesh-modal-foot">
+                <button class="mesh-btn" data-close="freq-modal">Cancel</button>
+                <button class="mesh-btn primary" id="freq-save">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/mesh.js"></script>
+</body>
+</html>

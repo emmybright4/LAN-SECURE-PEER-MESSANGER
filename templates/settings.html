@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings &middot; SecureLocal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root[data-theme="light"] {
+            --brand: #12b886;
+            --brand-deep: #0b8a66;
+            --brand-soft: #e9f9f2;
+            --brand-line: #c7ecdd;
+            --branchigh-text: #ffffff;
+            --ink: #0f172a;
+            --ink-soft: #334155;
+            --muted: #64748b;
+            --line: #e6ebf1;
+            --canvas: #f3f6f4;
+            --card: #ffffff;
+            --soft: #f9fbfa;
+            --input-bg: #f7f9fb;
+            --focus-ring: rgba(18, 184, 134, 0.1);
+            --card-shadow: rgba(15, 23, 42, 0.07);
+            --item-shadow: rgba(15, 23, 42, 0.06);
+            --ok-bg: var(--brand-soft); --ok-fg: var(--brand-deep); --ok-line: var(--brand-line);
+            --warn-bg: #fff8ec; --warn-fg: #b45309; --warn-line: #fbe3bf;
+            --info-bg: #eff6ff; --info-fg: #1d4ed8; --info-line: #d6e4fb;
+            --danger: #b42318;
+            --header-grad1: rgba(18, 184, 134, 0.13);
+            --header-grad2: rgba(96, 165, 250, 0.10);
+        }
+
+        :root[data-theme="dark"] {
+            --brand: #2ee6a8;
+            --brand-deep: #17b98a;
+            --brand-soft: rgba(46, 230, 168, 0.09);
+            --brand-line: rgba(46, 230, 168, 0.28);
+            --branchigh-text: #06251b;
+            --ink: #eaf7f1;
+            --ink-soft: #c9ded5;
+            --muted: #8fb0a4;
+            --line: #21332c;
+            --canvas: #0a1210;
+            --card: #10201a;
+            --soft: #0d1a15;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --focus-ring: rgba(18, 184, 134, 0.18);
+            --card-shadow: rgba(0, 0, 0, 0.45);
+            --item-shadow: rgba(0, 0, 0, 0.3);
+            --ok-bg: rgba(46, 230, 168, 0.1); --ok-fg: #55e6b8; --ok-line: rgba(46, 230, 168, 0.3);
+            --warn-bg: rgba(255, 193, 7, 0.09); --warn-fg: #ffd166; --warn-line: rgba(255, 193, 7, 0.3);
+            --info-bg: rgba(96, 165, 250, 0.1); --info-fg: #93c5fd; --info-line: rgba(96, 165, 250, 0.3);
+            --danger: #ff8f85;
+            --header-grad1: rgba(18, 184, 134, 0.15);
+            --header-grad2: rgba(59, 130, 246, 0.08);
+        }
+
+        :root[data-theme="grass"] {
+            --brand: #3b9e46;
+            --brand-deep: #2e7c38;
+            --brand-soft: #eaf6e4;
+            --brand-line: #c4e4b8;
+            --branchigh-text: #ffffff;
+            --ink: #16281c;
+            --ink-soft: #2f4a38;
+            --muted: #6b8a76;
+            --line: #dde9d4;
+            --canvas: #eff5ea;
+            --card: #fdfffa;
+            --soft: #f6faf2;
+            --input-bg: #f4f9ef;
+            --focus-ring: rgba(59, 158, 70, 0.12);
+            --card-shadow: rgba(22, 40, 28, 0.08);
+            --item-shadow: rgba(22, 40, 28, 0.06);
+            --ok-bg: #eaf6e4; --ok-fg: #2e7c38; --ok-line: #c4e4b8;
+            --warn-bg: #fdf4dd; --warn-fg: #9a6a00; --warn-line: #f0dca4;
+            --info-bg: #e9f2fd; --info-fg: #2458a8; --info-line: #cadaef;
+            --danger: #a83a2a;
+            --header-grad1: rgba(59, 158, 70, 0.14);
+            --header-grad2: rgba(150, 195, 90, 0.12);
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--canvas);
+            min-height: 100vh;
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            transition: background 0.35s ease, color 0.35s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(820px 420px at 12% -10%, var(--header-grad1), transparent 62%),
+                radial-gradient(620px 360px at 102% 104%, var(--header-grad2), transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .settings-page {
+            position: relative;
+            z-index: 1;
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 30px 18px 48px;
+        }
+
+        /* Compact top bar */
+        .settings-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .brand-mark {
+            width: 44px;
+            height: 44px;
+            flex: none;
+            border-radius: 13px;
+            display: grid;
+            place-items: center;
+            color: var(--branchigh-text);
+            font-size: 16px;
+            background: linear-gradient(150deg, var(--brand), var(--brand-deep));
+            box-shadow: 0 10px 22px rgba(11, 138, 102, 0.26);
+        }
+
+        .header-text { flex: 1; min-width: 0; }
+        .settings-header h1 { font-size: 19px; letter-spacing: -0.02em; line-height: 1.2; }
+        .settings-header p { font-size: 12.8px; color: var(--muted); }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 15px;
+            border-radius: 10px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 1px 2px var(--item-shadow);
+            transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+        }
+
+        .back-link:hover { color: var(--brand-deep); border-color: var(--brand-line); transform: translateY(-1px); text-decoration: none; }
+        .back-link:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+        .flash {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 14px;
+            border-radius: 11px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            border: 1px solid;
+        }
+
+        .flash.success { background: var(--ok-bg); color: var(--ok-fg); border-color: var(--ok-line); }
+        .flash.error { background: rgba(180, 35, 24, 0.08); color: var(--danger); border-color: rgba(180, 35, 24, 0.3); }
+
+        .settings-card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 8px 26px 26px;
+            box-shadow: 0 18px 44px var(--card-shadow);
+            transition: background 0.35s ease, border-color 0.35s ease;
+        }
+
+        /* Tabs */
+        .settings-nav {
+            display: flex;
+            gap: 4px;
+            margin: 0 -26px 22px;
+            padding: 10px 22px;
+            border-bottom: 1px solid var(--line);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .settings-nav::-webkit-scrollbar { display: none; }
+
+        .nav-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 9px 13px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--muted);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .nav-tab i { font-size: 12px; }
+        .nav-tab:hover { background: var(--soft); color: var(--ink); }
+        .nav-tab:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+        .nav-tab.active {
+            background: var(--brand-soft);
+            border-color: var(--brand-line);
+            color: var(--brand-deep);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.22s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+        }
+
+        .section-sub {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        /* Profile */
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .avatar-container { position: relative; width: 104px; height: 104px; margin-bottom: 12px; }
+
+        .avatar-image,
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 600;
+            color: var(--branchigh-text);
+            background: linear-gradient(150deg, var(--brand), var(--brand-deep));
+            border: 1px solid var(--brand-line);
+            box-shadow: 0 8px 20px rgba(11, 138, 102, 0.22), inset 0 0 0 3px var(--card);
+            object-fit: cover;
+        }
+
+        .avatar-upload-btn {
+            position: absolute;
+            right: -2px;
+            bottom: -2px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--card);
+            color: var(--brand-deep);
+            border: 1px solid var(--brand-line);
+            box-shadow: 0 3px 8px var(--item-shadow);
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+        }
+
+        .avatar-upload-btn:hover { background: var(--brand-soft); transform: scale(1.08); }
+        .avatar-upload-btn input { display: none; }
+
+        .avatar-hint { font-size: 11.5px; color: var(--muted); margin-top: -4px; }
+
+        .user-name { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+        .user-status { color: var(--muted); font-size: 13px; margin-top: 1px; }
+
+        .verify-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--brand-soft);
+            border: 1px solid var(--brand-line);
+            color: var(--brand-deep);
+            padding: 4px 11px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+
+        .form-group label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .form-group label i { margin-right: 5px; font-size: 11px; }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: var(--input-bg);
+            font: inherit;
+            font-size: 14px;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .form-group textarea { min-height: 92px; resize: vertical; }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            background: var(--card);
+            border-color: var(--brand-line);
+            box-shadow: 0 0 0 3px var(--focus-ring);
+        }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        .btn-save {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(150deg, var(--brand), var(--brand-deep));
+            color: var(--branchigh-text);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+            box-shadow: 0 10px 22px rgba(11, 138, 102, 0.22);
+            transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease;
+        }
+
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 14px 26px rgba(11, 138, 102, 0.26); }
+        .btn-save:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        /* Appearance */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .settings-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 520px) {
+            .settings-grid { grid-template-columns: 1fr; }
+        }
+
+        .setting-card {
+            position: relative;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 16px;
+            cursor: pointer;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        .setting-card:hover { border-color: var(--brand-line); box-shadow: 0 6px 18px var(--item-shadow); transform: translateY(-1px); }
+        .setting-card:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+        .setting-card i { font-size: 15px; color: var(--brand-deep); margin-bottom: 10px; display: block; }
+        .setting-card h3 { font-size: 13.5px; letter-spacing: -0.01em; margin-bottom: 3px; }
+        .setting-card p { color: var(--muted); font-size: 12.4px; margin: 0; }
+
+        .setting-card.is-active {
+            border-color: var(--brand-line);
+            background: var(--brand-soft);
+        }
+
+        .setting-card.is-active::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-size: 10px;
+            color: var(--brand-deep);
+        }
+
+        /* Theme preview chips */
+        .theme-swatch { display: flex; gap: 5px; margin-top: 9px; }
+
+        .theme-swatch span {
+            width: 14px; height: 14px; border-radius: 5px;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+        }
+
+        /* Network dashboard */
+        .net-hero {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            align-items: center;
+            background: linear-gradient(150deg, var(--brand-soft), transparent 70%);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 14px;
+        }
+
+        .signal-tower {
+            position: relative;
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: var(--brand-deep);
+            font-size: 26px;
+            background: var(--card);
+            border: 1px solid var(--line);
+        }
+
+        .signal-tower::after {
+            content: '';
+            position: absolute;
+            inset: -7px;
+            border-radius: 50%;
+            border: 2px solid var(--brand);
+            opacity: 0;
+            animation: netPulse 2.2s ease-out infinite;
+        }
+
+        @keyframes netPulse {
+            0%   { transform: scale(0.9); opacity: 0.65; }
+            100% { transform: scale(1.28); opacity: 0; }
+        }
+
+        .net-hero h3 { font-size: 17px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+        .net-hero .net-sub { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+
+        .quality-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: var(--ok-bg);
+            color: var(--ok-fg);
+            border: 1px solid var(--ok-line);
+        }
+
+        .quality-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; animation: blinkDot 1.4s ease-in-out infinite; }
+
+        @keyframes blinkDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+        .quality-pill.q-good { background: var(--ok-bg); color: var(--ok-fg); border-color: var(--ok-line); }
+        .quality-pill.q-fair { background: var(--warn-bg); color: var(--warn-fg); border-color: var(--warn-line); }
+        .quality-pill.q-poor { background: rgba(180, 35, 24, 0.12); color: var(--danger); border-color: rgba(180, 35, 24, 0.35); }
+        .quality-pill.q-unknown { background: var(--soft); color: var(--muted); border-color: var(--line); }
+
+        .net-meters {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        @media (max-width: 640px) { .net-meters { grid-template-columns: 1fr; } }
+
+        .meter-card {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .meter-card .meter-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        /* signal bars */
+        .signal-bars { display: inline-flex; align-items: flex-end; gap: 5px; height: 34px; }
+
+        .signal-bars span {
+            width: 9px;
+            border-radius: 3px 3px 2px 2px;
+            background: var(--line);
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .signal-bars span:nth-child(1) { height: 10px; }
+        .signal-bars span:nth-child(2) { height: 16px; }
+        .signal-bars span:nth-child(3) { height: 22px; }
+        .signal-bars span:nth-child(4) { height: 28px; }
+        .signal-bars span:nth-child(5) { height: 34px; }
+
+        .signal-bars.s-excellent span.on { background: var(--brand); box-shadow: 0 0 8px var(--brand); }
+        .signal-bars.s-good span.on { background: #86d99a; }
+        .signal-bars.s-fair span.on { background: #eab308; }
+        .signal-bars.s-poor span.on { background: #e05252; }
+
+        /* score donut */
+        .score-ring {
+            --score: 0;
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            margin: 0 auto;
+            background: conic-gradient(var(--brand) calc(var(--score) * 1%), var(--line) 0);
+            transition: background 0.6s ease;
+        }
+
+        .score-ring::before {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--soft);
+        }
+
+        .score-ring span { position: relative; font-size: 13px; font-weight: 800; color: var(--brand-deep); }
+
+        .latency-value { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+        .latency-value small { font-size: 12px; font-weight: 600; color: var(--muted); }
+
+        .net-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--line);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) { .net-details { grid-template-columns: 1fr 1fr; } }
+
+        .net-details div {
+            background: var(--soft);
+            padding: 11px 13px;
+            transition: background 0.35s ease;
+        }
+
+        .net-details strong {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .net-details span { font-size: 12.8px; color: var(--ink-soft); word-break: break-all; }
+
+        .net-refresh {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 11px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 14px;
+            transition: border-color 0.15s ease, color 0.15s ease;
+        }
+
+        .net-refresh:hover { border-color: var(--brand-line); color: var(--brand-deep); }
+        .net-refresh i.spin { animation: spin 1s linear infinite; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .net-live { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); margin-left: 12px; }
+        .net-live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 6px var(--brand); animation: blinkDot 1.4s ease-in-out infinite; }
+
+        /* Security */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .security-item {
+            background: var(--soft);
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            padding: 14px 15px;
+        }
+
+        .security-item h4 { font-size: 13px; margin-bottom: 4px; }
+        .security-item p { color: var(--muted); font-size: 12.3px; margin-bottom: 10px; }
+
+        .security-badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .badge-secure { background: var(--ok-bg); color: var(--ok-fg); border: 1px solid var(--ok-line); }
+        .badge-warning { background: var(--warn-bg); color: var(--warn-fg); border: 1px solid var(--warn-line); }
+
+        /* Toggles */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .setting-row:last-child { border-bottom: none; }
+        .setting-info h4 { font-size: 13.5px; margin-bottom: 2px; }
+        .setting-info p { color: var(--muted); font-size: 12.4px; margin: 0; }
+
+        .toggle-switch { position: relative; display: inline-block; width: 42px; height: 24px; flex: none; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: var(--line);
+            cursor: pointer;
+            transition: background 0.18s ease;
+        }
+
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            border-radius: 50%;
+            background: var(--card);
+            box-shadow: 0 1px 2px var(--item-shadow);
+            transition: transform 0.18s ease;
+        }
+
+        input:checked + .toggle-slider { background: var(--brand); }
+        input:checked + .toggle-slider::before { transform: translateX(18px); }
+        .toggle-switch input:focus-visible + .toggle-slider { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+        /* About */
+        .about-block { text-align: center; padding: 8px 0 4px; }
+
+        .about-mark {
+            width: 54px;
+            height: 54px;
+            margin: 0 auto 12px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            color: var(--branchigh-text);
+            font-size: 19px;
+            background: linear-gradient(150deg, var(--brand), var(--brand-deep));
+            box-shadow: 0 10px 22px rgba(11, 138, 102, 0.24);
+        }
+
+        .about-block h2 { font-size: 17px; letter-spacing: -0.01em; }
+        .about-version { color: var(--muted); font-size: 12.5px; margin: 2px 0 12px; }
+        .about-copy { color: var(--muted); font-size: 13px; max-width: 460px; margin: 0 auto 16px; }
+
+        .about-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--line);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .about-meta div { background: var(--soft); padding: 10px 12px; }
+        .about-meta strong { display: block; font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+        .about-meta span { font-size: 12.6px; color: var(--ink-soft); }
+
+        /* Logout */
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 18px;
+            padding: 11px 20px;
+            border-radius: 11px;
+            background: transparent;
+            border: 1px solid rgba(180, 35, 24, 0.35);
+            color: var(--danger);
+            font: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .btn-logout:hover { background: rgba(180, 35, 24, 0.07); border-color: rgba(180, 35, 24, 0.55); }
+        .btn-logout:focus-visible { outline: 2px solid var(--danger); outline-offset: 2px; }
+
+        /* Toast */
+        .notification {
+            padding: 12px 18px;
+            border-radius: 11px;
+            color: var(--branchigh-text);
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.2);
+            animation: toastIn 0.25s ease-out;
+        }
+
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 640px) {
+            .settings-page { padding: 20px 14px 40px; }
+            .settings-card { padding: 6px 16px 20px; border-radius: 16px; }
+            .settings-nav { margin: 0 -16px 18px; padding: 8px 14px; flex-wrap: wrap; }
+            .nav-tab { padding: 8px 11px; font-size: 12.5px; }
+            .nav-tab i { display: none; }
+            .settings-header { flex-wrap: wrap; }
+            .back-link { order: 3; width: 100%; justify-content: center; margin-top: 4px; }
+            .about-meta { grid-template-columns: 1fr; }
+            .net-hero { grid-template-columns: auto 1fr; }
+            .net-hero .quality-pill { grid-column: 1 / -1; justify-self: start; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-page" id="scale-root">
+        <header class="settings-header">
+            <div class="brand-mark"><i class="fas fa-gear"></i></div>
+            <div class="header-text">
+                <h1>Settings</h1>
+                <p>Profile, network, appearance and privacy</p>
+            </div>
+            <a class="back-link" href="/chat"><i class="fas fa-chevron-left"></i> Back to chat</a>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}"><i class="fas fa-circle-info"></i> {{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="settings-card">
+            <nav class="settings-nav" role="tablist">
+                <button class="nav-tab active" onclick="openTab(event, 'profile')" id="tab-profile" role="tab" aria-selected="true"><i class="fas fa-user"></i> Profile</button>
+                <button class="nav-tab" onclick="openTab(event, 'appearance')" id="tab-appearance" role="tab" aria-selected="false"><i class="fas fa-palette"></i> Appearance</button>
+                <button class="nav-tab" onclick="openTab(event, 'network')" id="tab-network" role="tab" aria-selected="false"><i class="fas fa-network-wired"></i> Network</button>
+                <button class="nav-tab" onclick="openTab(event, 'mesh')" id="tab-mesh" role="tab" aria-selected="false"><i class="fas fa-project-diagram"></i> Mesh & Topology</button>
+                <button class="nav-tab" onclick="openTab(event, 'security')" id="tab-security" role="tab" aria-selected="false"><i class="fas fa-shield-halved"></i> Security</button>
+                <button class="nav-tab" onclick="openTab(event, 'privacy')" id="tab-privacy" role="tab" aria-selected="false"><i class="fas fa-lock"></i> Privacy</button>
+                <button class="nav-tab" onclick="openTab(event, 'about')" id="tab-about" role="tab" aria-selected="false"><i class="fas fa-circle-info"></i> About</button>
+            </nav>
+
+            <!-- Profile Tab -->
+            <div id="profile" class="tab-content active" role="tabpanel">
+                <div class="profile-section">
+                    <div class="avatar-container">
+                        <img id="avatar-preview" class="avatar-image" src="" alt="Profile" style="display:none;">
+                        <div id="avatar-placeholder" class="avatar-placeholder">{{ username[0].upper() }}</div>
+                        <label class="avatar-upload-btn" title="Change avatar">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" id="avatar-input" accept="image/*">
+                        </label>
+                    </div>
+                    <div class="avatar-hint">Photos are resized automatically before upload</div>
+                    <div class="user-name" id="display-name">{{ username }}</div>
+                    <div class="user-status" id="user-status">Available</div>
+                    <div class="verify-badge"><i class="fas fa-shield-halved"></i> Secure local account</div>
+                </div>
+
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="bio"><i class="fas fa-pen"></i> Bio</label>
+                        <textarea id="bio" placeholder="Tell people on your network a little about yourself"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status"><i class="fas fa-comment"></i> Status message</label>
+                        <input type="text" id="status" placeholder="Available, Busy, Away..." value="Available">
+                    </div>
+                    <button type="button" class="btn-save" onclick="saveProfile()"><i class="fas fa-check"></i> Save changes</button>
+                </form>
+            </div>
+
+            <!-- Appearance Tab -->
+            <div id="appearance" class="tab-content" role="tabpanel">
+                <div class="section-title">Appearance</div>
+                <p class="section-sub">Pick a mode or accent &mdash; it applies instantly and is remembered for next time.</p>
+                <div class="settings-grid">
+                    <button type="button" class="setting-card" data-theme-card="light" onclick="applyTheme('light', true)">
+                        <i class="fas fa-sun"></i>
+                        <h3>Light</h3>
+                        <p>Clean bright canvas for daytime</p>
+                        <div class="theme-swatch"><span style="background:#f3f6f4"></span><span style="background:#12b886"></span><span style="background:#ffffff"></span></div>
+                    </button>
+                    <button type="button" class="setting-card" data-theme-card="dark" onclick="applyTheme('dark', true)">
+                        <i class="fas fa-moon"></i>
+                        <h3>Dark</h3>
+                        <p>Easy on the eyes at night</p>
+                        <div class="theme-swatch"><span style="background:#0a1210"></span><span style="background:#2ee6a8"></span><span style="background:#10201a"></span></div>
+                    </button>
+                    <button type="button" class="setting-card" data-theme-card="grass" onclick="applyTheme('grass', true)">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Grass</h3>
+                        <p>Nature-inspired green accents</p>
+                        <div class="theme-swatch"><span style="background:#eff5ea"></span><span style="background:#3b9e46"></span><span style="background:#fdfffa"></span></div>
+                    </button>
+                    <button type="button" class="setting-card" onclick="cycleFontSize()">
+                        <i class="fas fa-font"></i>
+                        <h3>Font size</h3>
+                        <p id="font-label">Normal &mdash; click to change</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Network Tab -->
+            <div id="network" class="tab-content" role="tabpanel">
+                <div class="section-title">Network</div>
+                <p class="section-sub">The connection this app is bound to, and how strong it is right now.</p>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;background:linear-gradient(90deg, rgba(52,211,153,0.12), rgba(56,189,248,0.08));border:1px solid var(--brand-line);padding:14px 16px;border-radius:12px;box-shadow:0 10px 30px -20px rgba(52,211,153,0.8)">
+                    <div>
+                        <strong style="display:flex;align-items:center;gap:8px"><i class="fas fa-project-diagram" style="color:var(--brand-deep)"></i> Mesh / Topology Dashboard</strong>
+                        <div style="color:var(--muted);font-size:12.5px">Live topology, towers, links & inter-tower view • New</div>
+                    </div>
+                    <a href="/network/dashboard" class="back-link" style="box-shadow:none;background:var(--brand);color:#fff;border:none"><i class="fas fa-arrow-up-right-from-square"></i> Open Dashboard</a>
+                </div>
+
+                <div class="net-hero">
+                    <div class="signal-tower"><i class="fas fa-wifi" id="net-type-icon"></i></div>
+                    <div>
+                        <h3 id="net-name"><i class="fas fa-circle-notch fa-spin"></i> Detecting&hellip;</h3>
+                        <div class="net-sub" id="net-sub">This shows the Wi-Fi or wired LAN your device is on.</div>
+                    </div>
+                    <div class="quality-pill q-unknown" id="quality-pill"><span class="dot"></span> <span id="quality-text">Unknown</span></div>
+                </div>
+
+                <div class="net-meters">
+                    <div class="meter-card">
+                        <div class="meter-label">Signal strength</div>
+                        <div class="signal-bars s-good" id="signal-bars">
+                            <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div style="font-size:11.5px;color:var(--muted);margin-top:8px" id="signal-text">&mdash;</div>
+                    </div>
+                    <div class="meter-card">
+                        <div class="meter-label">Quality score</div>
+                        <div class="score-ring" id="score-ring"><span id="score-text">&ndash;</span></div>
+                        <div style="font-size:11.5px;color:var(--muted);margin-top:8px">signal + latency blend</div>
+                    </div>
+                    <div class="meter-card">
+                        <div class="meter-label">Latency</div>
+                        <div class="latency-value"><span id="latency-text">&ndash;</span> <small>ms</small></div>
+                        <div style="font-size:11.5px;color:var(--muted);margin-top:8px" id="latency-sub">ping to your gateway</div>
+                    </div>
+                </div>
+
+                <div class="net-details">
+                    <div><strong>Hostname</strong><span id="nd-host">&mdash;</span></div>
+                    <div><strong>Local IP</strong><span id="nd-ip">&mdash;</span></div>
+                    <div><strong>Gateway</strong><span id="nd-gw">&mdash;</span></div>
+                    <div><strong>Messaging port</strong><span id="nd-port">&mdash;</span></div>
+                    <div><strong>Peers online</strong><span id="nd-peers">&mdash;</span></div>
+                    <div><strong>Radio type</strong><span id="nd-radio">&mdash;</span></div>
+                </div>
+
+                <button class="net-refresh" onclick="loadNetworkQuality(true)"><i class="fas fa-rotate" id="net-refresh-icon"></i> Refresh now</button>
+                <span class="net-live"><span class="dot"></span> auto-updates every 5 s</span>
+            </div>
+
+            <!-- Mesh & Topology Tab -->
+            <div id="mesh" class="tab-content" role="tabpanel">
+                <div class="section-title">Mesh, Tower & Topology</div>
+                <p class="section-sub">View live network topology, manage tower/hub mode, and access broadcast features.</p>
+                <div class="net-hero">
+                    <div class="signal-tower"><i class="fas fa-diagram-project"></i></div>
+                    <div>
+                        <h3>Network Topology Dashboard</h3>
+                        <div class="net-sub">See nodes, base stations, direct links, via-tower links, and inter-tower connections live.</div>
+                    </div>
+                    <a href="/network/dashboard" class="back-link"><i class="fas fa-external-link-alt"></i> Open Full Dashboard</a>
+                </div>
+                <div class="net-details">
+                    <div><strong>Features</strong><span>Tower/Hub Mode, Public Frequencies, Emergency Broadcast</span></div>
+                    <div><strong>Manual Discovery</strong><span>Add peers by IP:PORT when broadcast is filtered</span></div>
+                    <div><strong>Non-Invasive</strong><span>Doesn't affect existing DM/groups/calls</span></div>
+                </div>
+                <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+                    <a href="/broadcast" class="net-refresh"><i class="fas fa-tower-broadcast"></i> Open Broadcast Center</a>
+                    <a href="/network/dashboard" class="net-refresh"><i class="fas fa-project-diagram"></i> Open Topology Map</a>
+                </div>
+            </div>
+
+            <!-- Security Tab -->
+            <div id="security" class="tab-content" role="tabpanel">
+                <div class="section-title">Security</div>
+                <p class="section-sub">How this install protects your conversations.</p>
+                <div class="security-grid">
+                    <div class="security-item">
+                        <h4>Encryption</h4>
+                        <p>End-to-end encryption is active for messages</p>
+                        <span class="security-badge badge-secure">Secure</span>
+                    </div>
+                    <div class="security-item">
+                        <h4>Session timeout</h4>
+                        <p>Auto-lock after one hour of inactivity</p>
+                        <span class="security-badge badge-warning">Standard</span>
+                    </div>
+                    <div class="security-item">
+                        <h4>Local storage</h4>
+                        <p>Everything is stored on this device</p>
+                        <span class="security-badge badge-secure">Private</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="oldPassword"><i class="fas fa-key"></i> Current password</label>
+                        <input type="password" id="oldPassword" placeholder="Your current password" autocomplete="current-password">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword"><i class="fas fa-key"></i> New password</label>
+                        <input type="password" id="newPassword" placeholder="At least 6 characters" autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fas fa-key"></i> Confirm new password</label>
+                    <input type="password" id="confirmPassword" placeholder="Repeat the new password" autocomplete="new-password">
+                </div>
+                <button type="button" class="btn-save" onclick="changePassword()"><i class="fas fa-key"></i> Update password</button>
+            </div>
+
+            <!-- Privacy Tab -->
+            <div id="privacy" class="tab-content" role="tabpanel">
+                <div class="section-title">Privacy</div>
+                <p class="section-sub">Control what other people on the network can see. Saved on this device.</p>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Read receipts</h4>
+                        <p>Let others see when you have read their messages</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked id="privacy-read-receipts" aria-label="Read receipts">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Online status</h4>
+                        <p>Show your presence dot to other peers</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked id="privacy-online-status" aria-label="Online status">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <h4>Message previews</h4>
+                        <p>Show message content in notifications</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked id="privacy-message-previews" aria-label="Message previews">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- About Tab -->
+            <div id="about" class="tab-content" role="tabpanel">
+                <div class="about-block">
+                    <div class="about-mark"><i class="fas fa-shield-halved"></i></div>
+                    <h2>SecureLocal</h2>
+                    <p class="about-version">Version 1.1.0</p>
+                    <p class="about-copy">
+                        Privacy-focused chat for your local network. Messages stay on your LAN &mdash;
+                        no internet required, no data leaving the building.
+                    </p>
+                    <div class="about-meta">
+                        <div><strong>Built with</strong><span>Flask, Python, SQLite</span></div>
+                        <div><strong>Encryption</strong><span>AES-256, E2EE</span></div>
+                        <div><strong>License</strong><span>Private / local use</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-logout" onclick="logout()"><i class="fas fa-arrow-right-from-bracket"></i> Log out</button>
+        </div>
+    </div>
+
+    <script>
+        /* ===== tabs ===== */
+        function openTab(evt, tabName) {
+            document.querySelectorAll('.tab-content').forEach(function (panel) {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(function (tab) {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+            document.getElementById(tabName).classList.add('active');
+            const tabBtn = document.getElementById('tab-' + tabName);
+            tabBtn.classList.add('active');
+            tabBtn.setAttribute('aria-selected', 'true');
+        }
+
+        /* ===== themes (light / dark / grass) ===== */
+        function applyTheme(name, save) {
+            if (!['light', 'dark', 'grass'].includes(name)) name = 'light';
+            document.documentElement.setAttribute('data-theme', name);
+            document.querySelectorAll('[data-theme-card]').forEach(function (card) {
+                card.classList.toggle('is-active', card.dataset.themeCard === name);
+                card.style.borderColor = '';
+                card.style.background = '';
+            });
+            if (save) {
+                try { localStorage.setItem('sl-theme', name); } catch (e) {}
+                showNotification('Theme applied: ' + name.charAt(0).toUpperCase() + name.slice(1), 'success');
+            }
+        }
+
+        window.addEventListener('storage', function (e) {
+            if (e.key === 'sl-theme' && e.newValue) applyTheme(e.newValue, false);
+        });
+
+        /* try to restore last used theme */
+        let savedTheme = 'light';
+        try { savedTheme = localStorage.getItem('sl-theme') || 'light'; } catch (e) {}
+        applyTheme(savedTheme, false);
+
+        /* ===== font size scaler ===== */
+        const FONT_STEPS = [
+            { value: 0.9,  label: 'Small' },
+            { value: 1,    label: 'Normal' },
+            { value: 1.15, label: 'Large' },
+            { value: 1.3,  label: 'Extra large' }
+        ];
+        let fontIndex = 1;
+
+        function applyFont(index, save) {
+            fontIndex = Math.max(0, Math.min(FONT_STEPS.length - 1, index));
+            document.getElementById('scale-root').style.zoom = FONT_STEPS[fontIndex].value;
+            document.getElementById('font-label').innerHTML = FONT_STEPS[fontIndex].label + ' &mdash; click to change';
+            if (save) {
+                try { localStorage.setItem('sl-font', String(fontIndex)); } catch (e) {}
+                showNotification('Font size: ' + FONT_STEPS[fontIndex].label, 'success');
+            }
+        }
+
+        function cycleFontSize() { applyFont((fontIndex + 1) % FONT_STEPS.length, true); }
+
+        try {
+            const fi = localStorage.getItem('sl-font');
+            if (fi !== null) fontIndex = parseInt(fi, 10) || 1;
+        } catch (e) {}
+        applyFont(fontIndex, false);
+
+        /* ===== profile ===== */
+        async function saveProfile() {
+            const bio = document.getElementById('bio').value;
+            const status = document.getElementById('status').value;
+            try {
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bio: bio, status: status })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('user-status').textContent = status;
+                    showNotification('Profile updated', 'success');
+                } else {
+                    showNotification(result.error || 'Update failed', 'error');
+                }
+            } catch (e) {
+                showNotification('Network error', 'error');
+            }
+        }
+
+        /* ===== change password (real) ===== */
+        async function changePassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!oldPassword || !newPassword) {
+                showNotification('Fill in the current and new password', 'error');
+                return;
+            }
+            if (newPassword.length < 6) {
+                showNotification('New password must be at least 6 characters', 'error');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+            try {
+                const response = await fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    showNotification('Password updated successfully', 'success');
+                } else {
+                    showNotification(result.error || 'Could not update password', 'error');
+                }
+            } catch (e) {
+                showNotification('Network error', 'error');
+            }
+        }
+
+        /* ===== avatar upload with client-side resize ===== */
+        function resizeImageFile(file, maxSide, quality) {
+            return new Promise(function (resolve, reject) {
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    const img = new Image();
+                    img.onload = function () {
+                        let w = img.width, h = img.height;
+                        if (w > maxSide || h > maxSide) {
+                            const scale = Math.min(maxSide / w, maxSide / h);
+                            w = Math.round(w * scale);
+                            h = Math.round(h * scale);
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        canvas.toBlob(function (blob) {
+                            if (!blob) { reject(new Error('resize failed')); return; }
+                            resolve(new File([blob], (file.name.split('.')[0] || 'avatar') + '.jpg', { type: 'image/jpeg' }));
+                        }, 'image/jpeg', quality);
+                    };
+                    img.onerror = function () { resolve(file); }; // fall back to original
+                    img.src = ev.target.result;
+                };
+                reader.onerror = function () { reject(new Error('read failed')); };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('avatar-input').addEventListener('change', async function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // preview immediately
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                document.getElementById('avatar-preview').src = ev.target.result;
+                document.getElementById('avatar-preview').style.display = 'block';
+                document.getElementById('avatar-placeholder').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+
+            // resize client-side (max 512px square, JPEG q0.85) so uploads are small
+            let resized = file;
+            try {
+                resized = await resizeImageFile(file, 512, 0.85);
+                const kb = Math.round(resized.size / 1024);
+                showNotification('Resized – uploading…', 'info');
+            } catch (err) {
+                // keep the original if resizing fails
+            }
+
+            const formData = new FormData();
+            formData.append('avatar', resized);
+            try {
+                const response = await fetch('/api/upload-avatar', { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    showNotification('Avatar updated', 'success');
+                } else {
+                    showNotification(result.error || 'Upload failed', 'error');
+                }
+            } catch (err) {
+                showNotification('Upload error', 'error');
+            }
+        });
+
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/user-profile/' + encodeURIComponent('{{ username }}'));
+                const result = await response.json();
+                if (result.profile) {
+                    const p = result.profile;
+                    if (p.avatar) {
+                        document.getElementById('avatar-preview').src = p.avatar;
+                        document.getElementById('avatar-preview').style.display = 'block';
+                        document.getElementById('avatar-placeholder').style.display = 'none';
+                    }
+                    if (p.bio) document.getElementById('bio').value = p.bio;
+                    if (p.status && typeof p.status === 'string') {
+                        document.getElementById('status').value = p.status;
+                        document.getElementById('user-status').textContent = p.status;
+                    }
+                }
+            } catch (e) {
+                console.error('Profile load error', e);
+            }
+        }
+
+        /* ===== privacy toggles persist on this device ===== */
+        const PRIVACY_KEYS = ['privacy-read-receipts', 'privacy-online-status', 'privacy-message-previews'];
+        PRIVACY_KEYS.forEach(function (id) {
+            const input = document.getElementById(id);
+            let saved = null;
+            try { saved = localStorage.getItem('sl-' + id); } catch (e) {}
+            if (saved !== null) input.checked = saved === '1';
+            input.addEventListener('change', function () {
+                try { localStorage.setItem('sl-' + id, input.checked ? '1' : '0'); } catch (e) {}
+                showNotification(input.checked ? 'Enabled: ' + input.getAttribute('aria-label') : 'Disabled: ' + input.getAttribute('aria-label'), 'info');
+            });
+        });
+
+        /* ===== network quality dashboard ===== */
+        const QUALITY_LABELS = { excellent: 'Excellent', good: 'Good', fair: 'Fair', poor: 'Poor', unknown: 'Unknown' };
+
+        function renderQuality(q) {
+            if (q.error) {
+                document.getElementById('net-name').textContent = 'Network info unavailable';
+                return;
+            }
+            const isWifi = q.connection_type === 'wifi';
+            document.getElementById('net-name').textContent = q.network_name || (isWifi ? 'Unknown Wi-Fi' : 'Ethernet / Wired LAN');
+            document.getElementById('net-type-icon').className = isWifi ? 'fas fa-wifi' : 'fas fa-ethernet';
+            document.getElementById('net-sub').textContent =
+                (isWifi ? 'Wi-Fi network' : 'Wired LAN') +
+                (q.radio_type ? ' · ' + q.radio_type : '') +
+                ' · messaging app is ' + (q.connected ? 'connected' : 'connecting…');
+
+            const pill = document.getElementById('quality-pill');
+            pill.className = 'quality-pill q-' + q.quality;
+            document.getElementById('quality-text').textContent = QUALITY_LABELS[q.quality] || 'Unknown';
+
+            // signal bars (Wi-Fi signal %, or score as a fallback)
+            const strength = q.signal_percent != null ? q.signal_percent : (q.quality_score || 0);
+            const bars = Math.max(1, Math.ceil(strength / 20));
+            const barWrap = document.getElementById('signal-bars');
+            barWrap.className = 'signal-bars s-' + q.quality;
+            barWrap.querySelectorAll('span').forEach(function (span, i) {
+                span.classList.toggle('on', i < bars);
+            });
+            document.getElementById('signal-text').textContent =
+                q.signal_percent != null ? ('Wi-Fi signal ' + q.signal_percent + '%') : 'wired connection';
+
+            // quality score ring
+            const score = q.quality_score || 0;
+            document.getElementById('score-ring').style.setProperty('--score', score);
+            document.getElementById('score-text').textContent = score;
+
+            // latency
+            document.getElementById('latency-text').textContent = q.latency_ms != null ? q.latency_ms : '–';
+            document.getElementById('latency-sub').textContent = q.gateway ? ('ping to ' + q.gateway) : 'no gateway found';
+
+            document.getElementById('nd-host').textContent = q.hostname || '—';
+            document.getElementById('nd-ip').textContent = q.local_ip || '—';
+            document.getElementById('nd-gw').textContent = q.gateway || '—';
+            document.getElementById('nd-port').textContent = q.port || '—';
+            document.getElementById('nd-peers').textContent = q.online_count != null ? q.online_count : '—';
+            document.getElementById('nd-radio').textContent = q.radio_type || '—';
+        }
+
+        async function loadNetworkQuality(manual) {
+            if (manual) {
+                document.getElementById('net-refresh-icon').classList.add('spin');
+            }
+            try {
+                const res = await fetch('/api/network/quality');
+                const data = await res.json();
+                renderQuality(data);
+            } catch (err) {
+                console.error('network quality error', err);
+            } finally {
+                document.getElementById('net-refresh-icon').classList.remove('spin');
+            }
+        }
+
+        loadNetworkQuality(false);
+        setInterval(loadNetworkQuality, 5000);
+
+        /* ===== util ===== */
+        function logout() {
+            if (confirm('Log out of SecureLocal?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        function showNotification(message, type) {
+            document.querySelectorAll('.notification').forEach(function (el) { el.remove(); });
+            const notification = document.createElement('div');
+            notification.className = 'notification notification-' + (type || 'info');
+            notification.textContent = message;
+            notification.style.cssText = 'position: fixed; top: 18px; right: 18px; z-index: 1000;';
+            if (type === 'success') notification.style.background = '#0b8a66';
+            else if (type === 'error') notification.style.background = '#b42318';
+            else if (type === 'warning') notification.style.background = '#b45309';
+            else notification.style.background = '#0f172a';
+            document.body.appendChild(notification);
+            setTimeout(function () {
+                notification.style.transition = 'opacity 0.25s ease';
+                notification.style.opacity = '0';
+                setTimeout(function () { notification.remove(); }, 260);
+            }, 2800);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>

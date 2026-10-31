@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set up SecureLocal &middot; LAN Secure Peer Messenger</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --brand: #12b886;
+            --brand-deep: #0b8a66;
+            --ink: #0f172a;
+            --muted: #64748b;
+            --line: #e6ebf1;
+            --canvas: #f3f6f4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--canvas);
+            color: var(--ink);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page {
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 40px 22px 56px;
+        }
+
+        .page-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+
+        .brand-mark {
+            width: 46px;
+            height: 46px;
+            flex: none;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            color: #ffffff;
+            font-size: 17px;
+            background: linear-gradient(150deg, var(--brand), var(--brand-deep));
+            box-shadow: 0 10px 22px rgba(11, 138, 102, 0.28);
+        }
+
+        .page-head h1 {
+            font-size: 21px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .page-head p {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 26px 28px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+
+        .card h2 {
+            font-size: 16px;
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+        }
+
+        .card > p.lead {
+            font-size: 13.5px;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        /* Welcome card */
+        .intro {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 26px;
+            align-items: start;
+        }
+
+        .intro p.body-copy {
+            font-size: 13.5px;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+        .assurances {
+            list-style: none;
+            background: #f7faf8;
+            border: 1px solid #e8f0eb;
+            border-radius: 13px;
+            padding: 14px 16px;
+            display: grid;
+            gap: 9px;
+        }
+
+        .assurances li {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            font-size: 12.8px;
+            color: #334155;
+        }
+
+        .assurances i {
+            color: var(--brand);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        /* Security modes */
+        .security-modes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .mode-card {
+            position: relative;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 16px 16px 14px;
+            cursor: pointer;
+            background: #ffffff;
+            transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+        }
+
+        .mode-card:hover { border-color: #cfe3da; }
+
+        .mode-card:focus-visible {
+            outline: 2px solid var(--brand);
+            outline-offset: 2px;
+        }
+
+        .mode-card.selected {
+            border-color: var(--brand);
+            background: #f4fdf9;
+            box-shadow: 0 0 0 3px rgba(18, 184, 134, 0.1);
+        }
+
+        .mode-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .mode-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .mode-tick {
+            width: 18px;
+            height: 18px;
+            flex: none;
+            border-radius: 50%;
+            border: 1.5px solid #d3dce4;
+            display: grid;
+            place-items: center;
+            color: transparent;
+            font-size: 8px;
+            transition: all 0.16s ease;
+        }
+
+        .mode-card.selected .mode-tick {
+            border-color: var(--brand);
+            background: var(--brand);
+            color: #ffffff;
+        }
+
+        .mode-tag {
+            display: inline-block;
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .mode-card.selected .mode-tag { color: var(--brand-deep); }
+
+        .features {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+        }
+
+        .features li {
+            position: relative;
+            padding-left: 17px;
+            font-size: 12.4px;
+            color: #475569;
+        }
+
+        .features li::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            top: 7px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #b9c6cf;
+        }
+
+        .mode-card.selected .features li::before { background: var(--brand); }
+
+        /* Form */
+        .fields {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .input-icon { position: relative; }
+
+        .input-icon > i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        .input-icon input {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px 0 38px;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            background: #f7f9fb;
+            font: inherit;
+            font-size: 14px;
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .input-icon input:focus {
+            background: #ffffff;
+            border-color: #bfe9d8;
+            box-shadow: 0 0 0 3px rgba(18, 184, 134, 0.1);
+        }
+
+        .error {
+            display: none;
+            align-items: center;
+            gap: 9px;
+            background: #fef2f2;
+            border: 1px solid #fbd5d5;
+            color: #b42318;
+            border-radius: 11px;
+            padding: 10px 13px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .error.show { display: flex; }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .actions .hint {
+            font-size: 12.3px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .actions .hint i { color: var(--brand); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            height: 46px;
+            padding: 0 24px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(150deg, var(--brand), var(--brand-deep));
+            color: #ffffff;
+            font: inherit;
+            font-size: 14.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(11, 138, 102, 0.24);
+            transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease;
+        }
+
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 26px rgba(11, 138, 102, 0.28); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        footer {
+            text-align: center;
+            margin-top: 4px;
+            padding-top: 18px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        footer span { color: #94a3b8; }
+
+        @media (max-width: 780px) {
+            .page { padding: 26px 16px 40px; }
+            .card { padding: 20px; border-radius: 16px; }
+            .intro { grid-template-columns: 1fr; gap: 18px; }
+            .security-modes { grid-template-columns: 1fr; }
+            .fields { grid-template-columns: 1fr; }
+            .actions { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; }
+            .actions .hint { justify-content: center; order: 2; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="page-head">
+            <div class="brand-mark"><i class="fas fa-shield-halved"></i></div>
+            <div>
+                <h1>Set up SecureLocal</h1>
+                <p>Private messaging on your local network</p>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="intro">
+                <div>
+                    <h2>Welcome aboard</h2>
+                    <p class="body-copy">
+                        This app runs entirely on your local network. No internet connection, no
+                        subscription and no data leaving your machines &mdash; just encrypted chat
+                        between the devices on the same LAN.
+                    </p>
+                </div>
+                <ul class="assurances">
+                    <li><i class="fas fa-check"></i><span>No internet connection required</span></li>
+                    <li><i class="fas fa-check"></i><span>Nothing is sent to external servers</span></li>
+                    <li><i class="fas fa-check"></i><span>Messages stay on your local network</span></li>
+                    <li><i class="fas fa-check"></i><span>You control the encryption level</span></li>
+                    <li><i class="fas fa-check"></i><span>No email or phone number required</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Choose a security level</h2>
+            <p class="lead">Pick the privacy profile that matches your network. You can change this later in Settings.</p>
+
+            <form id="setupForm" action="/setup" method="POST">
+                <div class="security-modes" role="radiogroup" aria-label="Security level">
+                    <button type="button" class="mode-card" onclick="selectMode(1)" aria-checked="false" role="radio">
+                        <div class="mode-top">
+                            <span class="mode-title">Basic</span>
+                            <span class="mode-tick"><i class="fas fa-check"></i></span>
+                        </div>
+                        <span class="mode-tag">Recommended</span>
+                        <ul class="features">
+                            <li>Simple password sign-in</li>
+                            <li>Messages stored locally only</li>
+                            <li>File sharing enabled</li>
+                            <li>Fast and lightweight</li>
+                        </ul>
+                    </button>
+
+                    <button type="button" class="mode-card" onclick="selectMode(2)" aria-checked="false" role="radio">
+                        <div class="mode-top">
+                            <span class="mode-title">Enhanced</span>
+                            <span class="mode-tick"><i class="fas fa-check"></i></span>
+                        </div>
+                        <span class="mode-tag">Secure</span>
+                        <ul class="features">
+                            <li>Everything in Basic</li>
+                            <li>AES-256 message encryption</li>
+                            <li>Files encrypted before transfer</li>
+                            <li>History cleared after 30 days</li>
+                        </ul>
+                    </button>
+
+                    <button type="button" class="mode-card" onclick="selectMode(3)" aria-checked="false" role="radio">
+                        <div class="mode-top">
+                            <span class="mode-title">Maximum</span>
+                            <span class="mode-tick"><i class="fas fa-check"></i></span>
+                        </div>
+                        <span class="mode-tag">Ultra secure</span>
+                        <ul class="features">
+                            <li>Everything in Enhanced</li>
+                            <li>End-to-end key exchange</li>
+                            <li>Self-destructing messages</li>
+                            <li>Masked broadcast IPs</li>
+                        </ul>
+                    </button>
+                </div>
+
+                <input type="hidden" id="securityMode" name="security_mode" value="1">
+
+                <div class="error" id="errorMessage"><i class="fas fa-circle-exclamation"></i><span></span></div>
+
+                <div class="fields">
+                    <div class="field">
+                        <label for="username">Display name</label>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="username" name="username" required autocomplete="username"
+                                   placeholder="e.g. Emmy Bright">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="password">Password</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" required minlength="6"
+                                   autocomplete="new-password" placeholder="At least 6 characters">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="confirmPassword">Confirm password</label>
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required minlength="6"
+                                   autocomplete="new-password" placeholder="Repeat your password">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <div class="hint"><i class="fas fa-lock"></i> Everything stays on this device</div>
+                    <button type="submit" class="btn" id="submitBtn">
+                        <i class="fas fa-arrow-right-to-bracket"></i> Start messaging
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <footer>
+            SecureLocal v1.0 &nbsp;&middot;&nbsp; Works offline &nbsp;&middot;&nbsp; No data collection<br>
+            <span>Messages only reach devices on the same local network</span>
+        </footer>
+    </div>
+
+    <script>
+        let selectedMode = 1;
+
+        function selectMode(mode) {
+            selectedMode = mode;
+            const cards = document.querySelectorAll('.mode-card');
+            cards.forEach(function (card) {
+                card.classList.remove('selected');
+                card.setAttribute('aria-checked', 'false');
+            });
+            if (cards[mode - 1]) {
+                cards[mode - 1].classList.add('selected');
+                cards[mode - 1].setAttribute('aria-checked', 'true');
+            }
+            document.getElementById('securityMode').value = mode;
+        }
+
+        selectMode(1);
+
+        document.getElementById('setupForm').addEventListener('submit', function (e) {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorEl = document.getElementById('errorMessage');
+            const errorText = errorEl.querySelector('span');
+
+            errorEl.classList.remove('show');
+            errorText.textContent = '';
+
+            function fail(message) {
+                e.preventDefault();
+                errorText.textContent = message;
+                errorEl.classList.add('show');
+                errorEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+
+            if (username.length < 3) return fail('Choose a display name with at least 3 characters.');
+            if (password.length < 6) return fail('Your password needs at least 6 characters.');
+            if (password !== confirmPassword) return fail('The two passwords do not match.');
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Setting up...';
+        });
+    </script>
+</body>
+</html>

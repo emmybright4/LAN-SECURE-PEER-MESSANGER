@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - LAN Secure Messenger 🔒</title>
+    <meta http-equiv="refresh" content="0; url=/login">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f6f4; height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; color: #0f172a; }
+        .redirect-card { background: #ffffff; padding: 2.25rem; border-radius: 20px; border: 1px solid #e6ebf1; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.10); text-align: center; max-width: 400px; }
+        .redirect-card i { display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 1rem; border-radius: 16px; color: #ffffff; font-size: 18px; background: linear-gradient(150deg, #12b886, #0b8a66); }
+        .redirect-card h2 { color: #0f172a; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+        .redirect-card p { color: #64748b; margin-bottom: 1.5rem; font-size: 14px; }
+        .btn-redirect { padding: 0.75rem 2rem; background: linear-gradient(150deg, #12b886, #0b8a66); color: white; border: none; border-radius: 11px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-block; box-shadow: 0 10px 22px rgba(11, 138, 102, 0.25); }
+        .btn-redirect:hover { transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+    <div class="redirect-card">
+        <i class="fas fa-arrow-right"></i>
+        <h2>Redirecting to Login...</h2>
+        <p>Registration is now on the login page flip-card.</p>
+        <a href="/login" class="btn-redirect">Go to Login</a>
+    </div>
+    <script>
+        setTimeout(() => { window.location.href = '/login'; }, 1000);
+    </script>
+</body>
+</html>

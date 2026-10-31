@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{{ username }} &middot; Secure LAN Messenger</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/chat.css">
+</head>
+<body class="chat-page">
+    <div class="chat-app">
+        <!-- Navigation rail -->
+        <nav class="rail">
+            <div class="rail-brand" title="Secure LAN Messenger"><i class="fas fa-shield-halved"></i></div>
+            <div class="rail-nav">
+                <button class="rail-btn is-active" data-view="chats" title="Chats" aria-label="Chats"><i class="fas fa-comment-dots"></i></button>
+                <button class="rail-btn" data-view="groups" title="Groups" aria-label="Groups"><i class="fas fa-user-group"></i></button>
+                <button class="rail-btn" data-view="status" title="Status" aria-label="Status"><i class="fas fa-circle-play"></i></button>
+                <button class="rail-btn" data-view="calls" title="Calls" aria-label="Calls"><i class="fas fa-phone"></i></button>
+                <a class="rail-btn" href="/broadcast" title="Broadcast Center" aria-label="Broadcast"><i class="fas fa-tower-broadcast"></i></a>
+            </div>
+            <div class="rail-bottom">
+                <button class="rail-btn" data-view="settings" title="Settings" aria-label="Settings"><i class="fas fa-gear"></i></button>
+                <button class="rail-btn" id="logout-btn" title="Log out" aria-label="Log out"><i class="fas fa-arrow-right-from-bracket"></i></button>
+            </div>
+        </nav>
+
+        <!-- Conversation list -->
+        <section class="side">
+            <div class="side-top">
+                <div class="me">
+                    <div class="av av-md" id="me-avatar">
+                        <span>{{ username[0].upper() }}</span>
+                        <i class="presence on"></i>
+                    </div>
+                    <div class="me-txt">
+                        <strong>{{ username }}</strong>
+                        <span><i class="live"></i> Online on LAN</span>
+                    </div>
+                </div>
+                <button class="icon-pill" id="compose-btn" title="New chat" aria-label="New chat"><i class="fas fa-plus"></i></button>
+            </div>
+
+            <div class="search-field">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" id="search-input" placeholder="Search people and groups" autocomplete="off">
+            </div>
+
+            <div class="side-views">
+                <div class="view is-active" id="view-chats">
+                    <div class="view-head">
+                        <span>Direct messages</span>
+                        <button class="link-btn" id="refresh-btn" title="Refresh"><i class="fas fa-rotate"></i></button>
+                    </div>
+                    <div class="rows" id="users-list"></div>
+                </div>
+
+                <div class="view" id="view-groups">
+                    <div class="view-head">
+                        <span>Groups</span>
+                        <button class="link-btn" id="new-group-btn" title="New group"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="rows" id="groups-list"></div>
+                </div>
+
+                <div class="view" id="view-status">
+                    <div class="view-head">
+                        <span>Status</span>
+                        <button class="link-btn" id="new-status-btn" title="Post status"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="rows" id="status-list"></div>
+                </div>
+
+                <div class="view" id="view-calls">
+                    <div class="view-head"><span>Call history</span></div>
+                    <div class="rows" id="calls-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Thread -->
+        <main class="conv" id="conv">
+            <header class="conv-top">
+                <button class="back-btn" id="back-btn" aria-label="Back to conversations"><i class="fas fa-chevron-left"></i></button>
+                <div class="av av-md" id="conv-avatar"><span>?</span></div>
+                <div class="conv-id">
+                    <strong id="conv-name">No conversation open</strong>
+                    <span id="conv-sub">Pick someone from the list</span>
+                </div>
+                <div class="conv-actions">
+                    <button id="star-btn" title="Star conversation" aria-label="Star conversation"><i class="far fa-star"></i></button>
+                    <button id="call-btn" title="Voice call" aria-label="Voice call"><i class="fas fa-phone"></i></button>
+                    <button id="video-btn" title="Video call" aria-label="Video call"><i class="fas fa-video"></i></button>
+                </div>
+            </header>
+
+            <div class="thread" id="thread">
+                <div class="welcome" id="welcome">
+                    <div class="welcome-mark"><i class="fas fa-lock"></i></div>
+                    <h2>Your conversations live here</h2>
+                    <p>Pick a contact on the left to start a private conversation, or create a group for the whole room.</p>
+                    <div class="welcome-tags">
+                        <span><i class="fas fa-lock"></i> End-to-end encrypted</span>
+                        <span><i class="fas fa-wifi"></i> LAN only</span>
+                        <span><i class="fas fa-plug"></i> Works offline</span>
+                    </div>
+                </div>
+                <div class="stream is-hidden" id="stream"></div>
+            </div>
+
+            <form class="composer" id="composer" autocomplete="off">
+                <div class="sticker-panel is-hidden" id="sticker-panel" aria-label="Sticker picker"></div>
+                <button type="button" class="composer-icon" id="sticker-btn" title="Stickers" aria-label="Stickers"><i class="far fa-face-grin-beam"></i></button>
+                <button type="button" class="composer-icon" id="attach-btn" title="Attach a file" aria-label="Attach a file"><i class="fas fa-paperclip"></i></button>
+                <input type="file" id="file-input" hidden accept="image/*,video/*,audio/*">
+                <div class="composer-box">
+                    <textarea id="message-input" rows="1" placeholder="Select a conversation to start" disabled></textarea>
+                </div>
+                <button type="submit" class="send-btn" id="send-btn" disabled aria-label="Send message"><i class="fas fa-paper-plane"></i></button>
+            </form>
+        </main>
+    </div>
+
+    <!-- New chat -->
+    <div class="dlg" id="new-chat-dialog">
+        <div class="dlg-card">
+            <div class="dlg-head">
+                <strong>New chat</strong>
+                <button class="dlg-close" data-close="new-chat-dialog" aria-label="Close"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="dlg-body">
+                <div class="field">
+                    <label for="new-chat-username">Username</label>
+                    <input type="text" id="new-chat-username" placeholder="Who do you want to message?">
+                </div>
+                <div class="dlg-divider"><span>or</span></div>
+                <button class="btn-quiet" id="dialog-new-group" style="width:100%"><i class="fas fa-user-group" style="margin-right:8px"></i>Create a group</button>
+            </div>
+            <div class="dlg-foot">
+                <button class="btn-solid" id="start-chat-btn" disabled>Start chat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New group -->
+    <div class="dlg" id="group-dialog">
+        <div class="dlg-card">
+            <div class="dlg-head">
+                <strong>New group</strong>
+                <button class="dlg-close" data-close="group-dialog" aria-label="Close"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="dlg-body">
+                <div class="field">
+                    <label for="group-name">Group name</label>
+                    <input type="text" id="group-name" placeholder="e.g. Third floor team">
+                </div>
+                <div class="field">
+                    <label for="group-desc">Description</label>
+                    <input type="text" id="group-desc" placeholder="Optional">
+                </div>
+                <div class="field">
+                    <label>Members</label>
+                    <div class="member-list" id="group-members"></div>
+                </div>
+            </div>
+            <div class="dlg-foot">
+                <button class="btn-quiet" data-close="group-dialog">Cancel</button>
+                <button class="btn-solid" id="create-group-btn">Create group</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New status -->
+    <div class="dlg" id="status-dialog">
+        <div class="dlg-card">
+            <div class="dlg-head">
+                <strong>Post a status</strong>
+                <button class="dlg-close" data-close="status-dialog" aria-label="Close"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="dlg-body">
+                <div class="field">
+                    <label for="status-text">What's happening?</label>
+                    <input type="text" id="status-text" placeholder="Available on LAN">
+                </div>
+                <div class="field">
+                    <label for="status-photo">Attach a photo <span style="font-weight:400;color:inherit;opacity:.7">(resized automatically)</span></label>
+                    <input type="file" id="status-photo" accept="image/*" style="width:100%;font:inherit">
+                    <img id="status-photo-preview" src="" alt="" style="display:none;max-width:100%;max-height:180px;border-radius:10px;margin-top:8px;object-fit:cover;">
+                </div>
+                <div class="field">
+                    <label for="status-color">Background</label>
+                    <input type="color" id="status-color" value="#0b8a66">
+                </div>
+            </div>
+            <div class="dlg-foot">
+                <button class="btn-quiet" data-close="status-dialog">Cancel</button>
+                <button class="btn-solid" id="save-status-btn">Post status</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toasts" id="toasts"></div>
+
+    <script>
+    (function () {
+        const ME = {{ username|tojson }};
+        const NOTES_KEY = 'slc.notes.' + ME;
+        const $el = (id) => document.getElementById(id);
+
+        const state = {
+            view: 'chats',
+            chat: null,
+            users: [],
+            groups: [],
+            previews: {},
+            profiles: {},
+            typing: [],
+            search: '',
+            poll: null
+        };
+
+        const STICKERS = [
+            '😀','😂','🥹','😍','😎','🤩','😴','🤯',
+            '🤔','🙄','😭','😡','🥳','👀','💀','🫡',
+            '👍','👎','👏','🙏','💪','🤝','🤙','✌️',
+            '🔥','❤️','🎉','💯','⭐','🚀','✅','🍕'
+        ];
+
+        const EMOJI_ONLY = /^[\p{Extended_Pictographic}\u200d\uFE0F\u20E3\s]{1,12}$/u;
+
+        /* ---------- helpers ---------- */
+
+        const PALETTES = [
+            ['#34d399', '#0b8a66'],
+            ['#60a5fa', '#2563eb'],
+            ['#fbbf24', '#d97706'],
+            ['#f472b6', '#be185d'],
+            ['#a78bfa', '#6d28d9'],
+            ['#22d3ee', '#0891b2']
+        ];
+
+        function gradient(name) {
+            let hash = 0;
+            for (const ch of String(name || '?')) hash = (hash * 31 + ch.charCodeAt(0)) % 9973;
+            const pair = PALETTES[hash % PALETTES.length];
+            return 'linear-gradient(150deg, ' + pair[0] + ', ' + pair[1] + ')';
+        }
+
+        function initial(name) {
+            return (name || '?').trim().charAt(0).toUpperCase() || '?';
+        }
+
+        function callDuration(seconds) {
+            const total = Math.max(0, Math.round(Number(seconds) || 0));
+            if (!total) return 'Missed';
+            const minutes = Math.floor(total / 60);
+            const rest = total % 60;
+            if (minutes < 60) return minutes ? minutes + 'm ' + rest + 's' : rest + 's';
+            return Math.floor(minutes / 60) + 'h ' + (minutes % 60 ? minutes % 60 + 'm' : '');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text == null ? '' : String(text);
+            return div.innerHTML;
+        }
+
+        function toDate(value) {
+            if (value == null) return null;
+            if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+            if (typeof value === 'number') return new Date(value * 1000);
+            const raw = String(value).trim();
+            if (!raw) return null;
+            if (/^\d+(\.\d+)?$/.test(raw)) return new Date(parseFloat(raw) * 1000);
+            const parsed = new Date(raw.replace(' ', 'T'));
+            return isNaN(parsed.getTime()) ? null : parsed;
+        }
+
+        function timeLabel(value) {
+            const d = toDate(value);
+            if (!d) return '';
+            return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        }
+
+        function dayKey(value) {
+            const d = toDate(value);
+            if (!d) return '';
+            return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+        }
+
+        function dayLabel(value) {
+            const d = toDate(value);
+            if (!d) return '';
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+            if (dayKey(d) === dayKey(today)) return 'Today';
+            if (dayKey(d) === dayKey(yesterday)) return 'Yesterday';
+            return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        function toast(message, kind) {
+            const box = $el('toasts');
+            const el = document.createElement('div');
+            el.className = 'toast' + (kind === 'ok' ? ' ok' : kind === 'err' ? ' err' : '');
+            el.innerHTML = '<i class="fas ' + (kind === 'err' ? 'fa-circle-exclamation' : 'fa-circle-check') + '"></i><span>' + escapeHtml(message) + '</span>';
+            box.appendChild(el);
+            setTimeout(() => el.remove(), 3200);
+        }
+
+        function setAvatar(node, name, online) {
+            if (!node) return;
+            node.style.background = gradient(name);
+            const photo = state.profiles[name] && state.profiles[name].avatar;
+            node.innerHTML = '<span>' + escapeHtml(initial(name)) + '</span>' +
+                (photo ? '<img src="' + escapeHtml(photo) + '" alt="" onerror="this.remove()">' : '') +
+                (online === undefined ? '' : '<i class="presence' + (online ? ' on' : '') + '"></i>');
+        }
+
+        /* Fetch profile photos (from Settings) so avatars show across the chat app */
+        async function loadProfiles(names) {
+            await Promise.all((names || []).filter(Boolean).map(async (name) => {
+                if (state.profiles[name]) return;
+                try {
+                    const res = await fetch('/api/user-profile/' + encodeURIComponent(name));
+                    const data = await res.json();
+                    state.profiles[name] = (data.profile && data.profile.avatar)
+                        ? { avatar: data.profile.avatar }
+                        : { avatar: null };
+                } catch (err) {
+                    state.profiles[name] = { avatar: null };
+                }
+            }));
+            setAvatar($el('me-avatar'), ME, true);
+        }
+
+        /* ---------- views ---------- */
+
+        function switchView(view) {
+            state.view = view;
+            document.querySelectorAll('.rail-btn[data-view]').forEach((b) => {
+                b.classList.toggle('is-active', b.dataset.view === view);
+            });
+            document.querySelectorAll('.view').forEach((v) => {
+                v.classList.toggle('is-active', v.id === 'view-' + view);
+            });
+            if (view === 'chats') loadUsers();
+            if (view === 'groups') loadGroups();
+            if (view === 'status') loadStatuses();
+            if (view === 'calls') loadCalls();
+        }
+
+        /* ---------- people ---------- */
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/users');
+                const data = await res.json();
+                state.users = data.users || [];
+            } catch (err) {
+                state.users = [];
+            }
+            try {
+                const res = await fetch('/api/conversations');
+                const data = await res.json();
+                state.previews = data.conversations || {};
+            } catch (err) {
+                state.previews = {};
+            }
+            await loadProfiles([ME, Object.keys(state.previews)].flat());
+            await loadProfiles(state.users.map((u) => u.username));
+            renderUsers();
+        }
+
+        function previewText(peer) {
+            const pv = state.previews[peer];
+            if (!pv || !pv.message) return null;
+            const body = String(pv.message).replace(/\s+/g, ' ').trim();
+            if (!body) return null;
+            const clipped = body.length > 200 ? body.slice(0, 200).trim() : body;
+            return (pv.sender === ME ? 'You: ' : '') + clipped;
+        }
+
+        function renderUsers() {
+            const container = $el('users-list');
+            container.innerHTML = '';
+            const query = state.search.toLowerCase();
+
+            const noteRow = document.createElement('button');
+            noteRow.type = 'button';
+            noteRow.className = 'row' + (state.chat && state.chat.type === 'note' ? ' is-active' : '');
+            noteRow.innerHTML =
+                '<div class="av av-md" style="background:linear-gradient(150deg,#fbbf24,#d97706)"><span><i class="fas fa-bookmark" style="font-size:14px"></i></span></div>' +
+                '<div class="row-bd"><div class="row-top"><span class="row-name">Note to self</span></div>' +
+                '<div class="row-sub"><span class="off">Saved on this device</span><span class="row-tag">Local</span></div></div>';
+            noteRow.addEventListener('click', openNotes);
+            if (!query || 'note to self'.includes(query)) container.appendChild(noteRow);
+
+            if (!state.users.length) {
+                const hint = document.createElement('div');
+                hint.className = 'hint';
+                hint.innerHTML = '<div class="hint-ico"><i class="fas fa-satellite-dish"></i></div>' +
+                    '<strong>No one else is online</strong>' +
+                    '<p>Keep this app open on the other machines on your network — they show up here automatically.</p>';
+                container.appendChild(hint);
+                return;
+            }
+
+            state.users
+                .filter((u) => !query || u.username.toLowerCase().includes(query))
+                .forEach((user) => {
+                    const online = (user.status || 'online') === 'online';
+                    const preview = previewText(user.username);
+                    const stamp = state.previews[user.username] && state.previews[user.username].timestamp;
+                    const row = document.createElement('button');
+                    row.type = 'button';
+                    row.className = 'row' + (state.chat && state.chat.key === user.username && state.chat.type === 'dm' ? ' is-active' : '');
+                    row.innerHTML =
+                        '<div class="av av-md"></div>' +
+                        '<div class="row-bd"><div class="row-top">' +
+                        '<span class="row-name">' + escapeHtml(user.username) + '</span>' +
+                        '<span class="row-time">' + escapeHtml(timeLabel(stamp || user.last_seen)) + '</span>' +
+                        '</div><div class="row-sub">' +
+                        (preview
+                            ? '<i class="fas fa-lock"></i><span class="preview">' + escapeHtml(preview) + '</span>'
+                            : (user.encrypted ? '<i class="fas fa-lock"></i><span>End-to-end encrypted</span>' : '<span class="off">Not encrypted yet</span>')) +
+                        (online ? '' : '<span class="row-tag">Away</span>') +
+                        '</div></div>';
+                    setAvatar(row.querySelector('.av'), user.username, online);
+                    row.addEventListener('click', () => openDirect(user));
+                    container.appendChild(row);
+                });
+        }
+
+        /* ---------- groups ---------- */
+
+        async function loadGroups() {
+            try {
+                const res = await fetch('/api/groups');
+                const data = await res.json();
+                state.groups = data.groups || [];
+            } catch (err) {
+                state.groups = [];
+            }
+
+            const list = $el('groups-list');
+            list.innerHTML = '';
+            const query = state.search.toLowerCase();
+            const groups = state.groups.filter((g) => !query || (g.name || '').toLowerCase().includes(query));
+
+            if (!groups.length) {
+                list.innerHTML = '<div class="hint"><div class="hint-ico"><i class="fas fa-user-group"></i></div>' +
+                    '<strong>No groups yet</strong><p>Create one to talk to several people at once.</p></div>';
+                return;
+            }
+
+            groups.forEach((group) => {
+                const row = document.createElement('button');
+                row.type = 'button';
+                row.className = 'row' + (state.chat && state.chat.key === group.group_id ? ' is-active' : '');
+                row.innerHTML =
+                    '<div class="av av-md"></div>' +
+                    '<div class="row-bd"><div class="row-top"><span class="row-name">' + escapeHtml(group.name) + '</span>' +
+                    '<span class="row-tag">' + (group.member_count || 0) + ' members</span></div>' +
+                    '<div class="row-sub"><span class="off">' + escapeHtml(group.description || 'Group chat') + '</span></div></div>';
+                setAvatar(row.querySelector('.av'), group.name);
+                row.addEventListener('click', () => openGroup(group));
+                list.appendChild(row);
+            });
+        }
+
+        /* ---------- statuses ---------- */
+
+        async function loadStatuses() {
+            const list = $el('status-list');
+            list.innerHTML = '<div class="hint"><div class="hint-ico"><i class="fas fa-circle-notch fa-spin"></i></div><p>Loading statuses…</p></div>';
+            let statuses = [];
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+                statuses = data.statuses || [];
+            } catch (err) {
+                statuses = [];
+            }
+
+            list.innerHTML = '';
+            if (!statuses.length) {
+                list.innerHTML = '<div class="hint"><div class="hint-ico"><i class="fas fa-circle-play"></i></div>' +
+                    '<strong>Nothing shared yet</strong><p>Post a quick update for everyone on the network.</p></div>';
+                return;
+            }
+
+            statuses.slice(0, 12).forEach((status) => {
+                const when = [dayLabel(status.created_at), timeLabel(status.created_at)].filter(Boolean).join(' · ');
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.className = 'status-card';
+                card.style.background = status.background_color || '#0b8a66';
+                const photoHtml = (status.media_type === 'image' && status.media_data)
+                    ? '<img src="' + escapeHtml(status.media_data) + '" alt="" style="width:100%;height:96px;object-fit:cover;border-radius:8px;margin-bottom:8px;">'
+                    : '';
+                card.innerHTML =
+                    '<div class="status-owner"><i class="fas fa-circle" style="font-size:6px"></i>' + escapeHtml(status.username) + '</div>' +
+                    photoHtml +
+                    '<p>' + escapeHtml(status.content) + '</p>' +
+                    '<time>' + escapeHtml(when || status.created_at || '') + '</time>';
+                card.addEventListener('click', () => {
+                    fetch('/api/status/' + status.id + '/view', { method: 'POST' }).catch(() => {});
+                    toast('Status from ' + status.username, 'ok');
+                });
+                list.appendChild(card);
+            });
+        }
+
+        /* ---------- calls ---------- */
+
+        async function loadCalls() {
+            const list = $el('calls-list');
+            let calls = [];
+            try {
+                const res = await fetch('/api/calls/history');
+                const data = await res.json();
+                calls = data.calls || [];
+            } catch (err) {
+                calls = [];
+            }
+
+            list.innerHTML = '';
+            if (!calls.length) {
+                list.innerHTML = '<div class="hint"><div class="hint-ico"><i class="fas fa-phone-slash"></i></div>' +
+                    '<strong>No calls yet</strong><p>Your voice and video history will appear here.</p></div>';
+                return;
+            }
+
+            calls.forEach((call) => {
+                const outgoing = call.caller === ME;
+                const other = outgoing ? call.receiver : call.caller;
+                const row = document.createElement('button');
+                row.type = 'button';
+                row.className = 'row';
+                row.innerHTML =
+                    '<div class="av av-md"><span><i class="fas ' + (call.call_type === 'video' ? 'fa-video' : 'fa-phone') + '" style="font-size:14px"></i></span></div>' +
+                    '<div class="row-bd"><div class="row-top">' +
+                    '<span class="row-name">' + escapeHtml(other) + '</span>' +
+                    '<span class="row-time">' + timeLabel(call.started_at) + '</span></div>' +
+                    '<div class="row-sub"><span class="off">' + (outgoing ? 'Outgoing' : 'Incoming') + ' &middot; ' + escapeHtml(call.status || 'ended') + '</span>' +
+                    '<span class="row-tag">' + callDuration(call.duration) + '</span></div></div>';
+                row.querySelector('.av').style.background = 'linear-gradient(150deg,#60a5fa,#2563eb)';
+                list.appendChild(row);
+            });
+        }
+
+        /* ---------- conversations ---------- */
+
+        function showThread(title, subtitle, online, colorSource) {
+            $el('welcome').style.display = 'none';
+            $el('stream').classList.remove('is-hidden');
+            $el('conv').classList.add('is-open');
+            $el('conv-avatar').style.display = 'grid';
+            ['star-btn', 'call-btn', 'video-btn'].forEach((id) => { $el(id).disabled = false; });
+            $el('conv-name').textContent = title;
+            state.chatSubtitle = subtitle;
+            $el('conv-sub').innerHTML = subtitle;
+            loadProfiles([colorSource || title]);
+            setAvatar($el('conv-avatar'), colorSource || title, online);
+            $el('message-input').disabled = false;
+            $el('message-input').placeholder = 'Write to ' + title + '…';
+            closeStickerPanel();
+            $el('message-input').focus();
+            updateSendState();
+        }
+
+        function hideThread() {
+            state.chat = null;
+            stopPolling();
+            $el('welcome').style.display = 'flex';
+            $el('stream').classList.add('is-hidden');
+            $el('stream').innerHTML = '';
+            $el('conv').classList.remove('is-open');
+            $el('conv-name').textContent = 'No conversation open';
+            $el('conv-sub').textContent = 'Pick someone from the list';
+            $el('star-btn').classList.remove('is-starred');
+            $el('star-btn').innerHTML = '<i class="far fa-star"></i>';
+            $el('conv-avatar').style.display = 'none';
+            ['star-btn', 'call-btn', 'video-btn'].forEach((id) => { $el(id).disabled = true; });
+            setAvatar($el('conv-avatar'), '?');
+            $el('message-input').disabled = true;
+            $el('message-input').placeholder = 'Select a conversation to start';
+            $el('message-input').value = '';
+            updateSendState();
+            renderUsers();
+            if (state.view === 'groups') loadGroups();
+        }
+
+        function startPolling() {
+            stopPolling();
+            state.poll = setInterval(() => {
+                if (state.chat) loadThread();
+            }, 5000);
+        }
+
+        function stopPolling() {
+            if (state.poll) {
+                clearInterval(state.poll);
+                state.poll = null;
+            }
+        }
+
+        function openDirect(user) {
+            state.chat = {
+                type: 'dm',
+                key: user.username,
+                name: user.username,
+                online: (user.status || 'online') === 'online',
+                encrypted: !!user.encrypted
+            };
+            const subtitle = state.chat.online
+                ? '<i class="live"></i> Online' + (state.chat.encrypted ? ' &middot; encrypted' : '')
+                : 'Last seen ' + (timeLabel(user.last_seen) || 'recently');
+            showThread(user.username, subtitle, state.chat.online);
+            renderUsers();
+            loadThread();
+            startPolling();
+        }
+
+        function openGroup(group) {
+            state.chat = {
+                type: 'group',
+                key: group.group_id,
+                name: group.name,
+                online: undefined
+            };
+            showThread(group.name, '<i class="fas fa-user-group" style="font-size:10px"></i> ' + (group.member_count || 0) + ' members', undefined, group.name);
+            loadGroups();
+            loadThread();
+            startPolling();
+        }
+
+        function openNotes() {
+            state.chat = { type: 'note', key: 'note', name: 'Note to self', online: undefined };
+            showThread('Note to self', 'Only visible on this device', undefined, 'Note');
+            renderUsers();
+            loadThread();
+            stopPolling();
+        }
+
+        function readNotes() {
+            try {
+                return JSON.parse(localStorage.getItem(NOTES_KEY) || '[]');
+            } catch (err) {
+                return [];
+            }
+        }
+
+        function writeNotes(notes) {
+            try {
+                localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+            } catch (err) {
+                toast('Could not save the note', 'err');
+            }
+        }
+
+        async function loadThread() {
+            if (!state.chat) return;
+            const chat = state.chat;
+
+            if (chat.type === 'note') {
+                renderMessages(readNotes(), { outbound: true, local: true });
+                return;
+            }
+
+            let messages = [];
+            try {
+                const url = chat.type === 'dm'
+                    ? '/api/messages?with=' + encodeURIComponent(chat.key)
+                    : '/api/groups/' + encodeURIComponent(chat.key) + '/messages';
+                const res = await fetch(url);
+                const data = await res.json();
+                messages = data.messages || [];
+            } catch (err) {
+                return;
+            }
+
+            if (state.chat !== chat) return;
+            await loadProfiles([...new Set(messages.map((m) => m.sender))]);
+            if (state.chat !== chat) return;
+            renderMessages(messages, { group: chat.type === 'group' });
+        }
+
+        function renderMessages(messages, options) {
+            const stream = $el('stream');
+            const stick = stream.scrollHeight - stream.scrollTop - stream.clientHeight < 140;
+            stream.innerHTML = '';
+
+            if (!messages.length) {
+                const empty = document.createElement('div');
+                empty.className = 'thread-empty';
+                empty.innerHTML = '<i class="fas fa-comment-slash"></i>' +
+                    (options.local ? 'Nothing saved yet. Notes stay on this device.' : 'No messages yet — say hello.');
+                stream.appendChild(empty);
+                return;
+            }
+
+            let lastDay = '';
+            let lastSender = '';
+            let lastTime = 0;
+
+            messages.forEach((msg) => {
+                const isOut = msg.sender === ME || options.outbound;
+                const day = dayKey(msg.timestamp);
+                if (day && day !== lastDay) {
+                    const sep = document.createElement('div');
+                    sep.className = 'day-sep';
+                    sep.textContent = dayLabel(msg.timestamp);
+                    stream.appendChild(sep);
+                    lastDay = day;
+                    lastSender = '';
+                }
+
+                const stamp = toDate(msg.timestamp);
+                const runStart = msg.sender !== lastSender || (stamp && stamp.getTime() - lastTime > 5 * 60 * 1000);
+                lastSender = msg.sender;
+                lastTime = stamp ? stamp.getTime() : 0;
+
+                const row = document.createElement('div');
+                row.className = 'bubble-row ' + (isOut ? 'out' : 'in') + (runStart ? ' group-start' : '');
+
+                if (!isOut) {
+                    const avatar = document.createElement('div');
+                    avatar.className = 'av av-sm';
+                    setAvatar(avatar, msg.sender);
+                    if (!runStart) avatar.style.visibility = 'hidden';
+                    row.appendChild(avatar);
+                }
+
+                const wrap = document.createElement('div');
+                wrap.className = 'bubble-wrap';
+
+                if (!isOut && options.group) {
+                    const name = document.createElement('span');
+                    name.className = 'bubble-name';
+                    name.textContent = msg.sender;
+                    wrap.appendChild(name);
+                }
+
+                const bubble = document.createElement('div');
+                const text = msg.message == null ? '' : String(msg.message).trim();
+                bubble.className = 'bubble';
+                if (EMOJI_ONLY.test(text)) bubble.classList.add('sticker');
+                bubble.textContent = text;
+
+                const meta = document.createElement('div');
+                meta.className = 'bubble-meta';
+                meta.innerHTML = '<span>' + timeLabel(msg.timestamp) + '</span>' +
+                    (msg.is_encrypted ? '<i class="fas fa-lock"></i>' : '') +
+                    (isOut && !options.local ? '<i class="fas fa-check"></i>' : '');
+                bubble.appendChild(meta);
+                wrap.appendChild(bubble);
+                row.appendChild(wrap);
+                stream.appendChild(row);
+            });
+
+            if (stick) stream.scrollTop = stream.scrollHeight;
+        }
+
+        function updateSendState() {
+            $el('send-btn').disabled = !state.chat || !$el('message-input').value.trim();
+        }
+
+        async function sendMessageDirect(customText) {
+            const input = $el('message-input');
+            const text = (customText || input.value).trim();
+            if (!text || !state.chat) return;
+            const chat = state.chat;
+
+            if (chat.type === 'note') {
+                const notes = readNotes();
+                notes.push({ sender: ME, message: text, timestamp: Date.now() / 1000 });
+                writeNotes(notes);
+                input.value = '';
+                autoGrow();
+                updateSendState();
+                loadThread();
+                return;
+            }
+
+            $el('send-btn').disabled = true;
+            try {
+                const url = chat.type === 'group'
+                    ? '/api/groups/' + encodeURIComponent(chat.key) + '/messages'
+                    : '/api/messages';
+                const body = chat.type === 'group'
+                    ? { message: text }
+                    : { recipient: chat.key, message: text };
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    input.value = '';
+                    autoGrow();
+                    if (chat.type === 'dm') {
+                        state.previews[chat.key] = {
+                            message: text,
+                            sender: ME,
+                            timestamp: new Date().toISOString()
+                        };
+                        renderUsers();
+                    }
+                    loadThread();
+                } else {
+                    toast(data.error || 'Message not sent', 'err');
+                }
+            } catch (err) {
+                toast('Message not sent — check the connection', 'err');
+            } finally {
+                updateSendState();
+                input.focus();
+            }
+        }
+
+        function autoGrow() {
+            const input = $el('message-input');
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+        }
+
+        /* ---------- stickers ---------- */
+
+        function buildStickerPanel() {
+            const panel = $el('sticker-panel');
+            panel.innerHTML = '';
+            STICKERS.forEach((emoji) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'sticker-item';
+                btn.textContent = emoji;
+                btn.addEventListener('click', () => {
+                    closeStickerPanel();
+                    sendMessageDirect(emoji);
+                });
+                panel.appendChild(btn);
+            });
+        }
+
+        function toggleStickerPanel() {
+            if (!$el('message-input').disabled) {
+                $el('sticker-panel').classList.toggle('is-hidden');
+            }
+        }
+
+        function closeStickerPanel() {
+            $el('sticker-panel').classList.add('is-hidden');
+        }
+
+        /* ---------- typing indicator ---------- */
+
+        let lastTypingSent = 0;
+
+        function notifyTyping() {
+            if (!state.chat || state.chat.type !== 'dm') return;
+            const now = Date.now();
+            if (now - lastTypingSent < 1500) return;
+            lastTypingSent = now;
+            fetch('/api/typing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipient: state.chat.key })
+            }).catch(() => {});
+        }
+
+        async function pollTyping() {
+            if (!state.chat || state.chat.type !== 'dm') return;
+            const chat = state.chat;
+            try {
+                const res = await fetch('/api/typing/status');
+                const data = await res.json();
+                const wasTyping = state.typing.length > 0;
+                state.typing = data.typing || [];
+                const peerTyping = state.typing.includes(chat.key);
+                if (state.chat !== chat) return;
+                if (peerTyping) {
+                    $el('conv-sub').innerHTML =
+                        '<span class="typing-indicator">typing <span class="dots"><i></i><i></i><i></i></span></span>';
+                } else if (wasTyping) {
+                    $el('conv-sub').innerHTML = state.chatSubtitle || '';
+                }
+            } catch (err) {
+                // ignore polling errors
+            }
+        }
+
+        /* ---------- dialogs ---------- */
+
+        function openDialog(id) {
+            $el(id).classList.add('open');
+        }
+
+        function closeDialog(id) {
+            $el(id).classList.remove('open');
+        }
+
+        async function openGroupDialog() {
+            closeDialog('new-chat-dialog');
+            const box = $el('group-members');
+            box.innerHTML = '';
+            if (!state.users.length) await loadUsers();
+            if (!state.users.length) {
+                box.innerHTML = '<div style="padding:8px;font-size:13px;color:#64748b">No one else is online right now.</div>';
+            }
+            state.users.forEach((user) => {
+                const label = document.createElement('label');
+                label.innerHTML = '<input type="checkbox" value="' + escapeHtml(user.username) + '">' + escapeHtml(user.username);
+                box.appendChild(label);
+            });
+            openDialog('group-dialog');
+        }
+
+        async function createGroup() {
+            const name = $el('group-name').value.trim();
+            if (!name) {
+                toast('Give the group a name first', 'err');
+                return;
+            }
+            const members = Array.from(document.querySelectorAll('#group-members input:checked')).map((cb) => cb.value);
+            try {
+                const res = await fetch('/api/groups', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, members: members, description: $el('group-desc').value.trim() })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeDialog('group-dialog');
+                    $el('group-name').value = '';
+                    $el('group-desc').value = '';
+                    toast('Group created', 'ok');
+                    switchView('groups');
+                } else {
+                    toast(data.error || 'Could not create the group', 'err');
+                }
+            } catch (err) {
+                toast('Could not create the group', 'err');
+            }
+        }
+
+        async function startNewChat() {
+            const name = $el('new-chat-username').value.trim();
+            if (!name) return;
+            if (!state.users.length) await loadUsers();
+            const user = state.users.find((u) => u.username.toLowerCase() === name.toLowerCase());
+            closeDialog('new-chat-dialog');
+            $el('new-chat-username').value = '';
+            if (user) {
+                openDirect(user);
+            } else {
+                toast('No one called "' + name + '" is online', 'err');
+            }
+        }
+
+        /* Resize a picked photo in the browser (max 1080px, JPEG) before sending */
+        function resizeStatusPhoto(file, maxSide, quality) {
+            return new Promise(function (resolve) {
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    const img = new Image();
+                    img.onload = function () {
+                        let w = img.width, h = img.height;
+                        if (w > maxSide || h > maxSide) {
+                            const scale = Math.min(maxSide / w, maxSide / h);
+                            w = Math.round(w * scale);
+                            h = Math.round(h * scale);
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = function () { resolve(ev.target.result); };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function saveStatus() {
+            const text = $el('status-text').value.trim();
+            const photoInput = $el('status-photo');
+            const photoFile = photoInput && photoInput.files && photoInput.files[0];
+            if (!text && !photoFile) {
+                toast('Write something or attach a photo first', 'err');
+                return;
+            }
+            const payload = {
+                content: text || (photoFile ? 'Photo' : ''),
+                background_color: $el('status-color').value
+            };
+            if (photoFile) {
+                payload.media_data = await resizeStatusPhoto(photoFile, 1080, 0.8);
+            }
+            try {
+                const res = await fetch('/api/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeDialog('status-dialog');
+                    $el('status-text').value = '';
+                    if (photoInput) {
+                        photoInput.value = '';
+                        $el('status-photo-preview').style.display = 'none';
+                    }
+                    toast('Status posted', 'ok');
+                    loadStatuses();
+                } else {
+                    toast(data.error || 'Could not post the status', 'err');
+                }
+            } catch (err) {
+                toast('Could not post the status', 'err');
+            }
+        }
+
+        const statusPhotoInput = $el('status-photo');
+        statusPhotoInput?.addEventListener('change', async function () {
+            const file = statusPhotoInput.files && statusPhotoInput.files[0];
+            if (!file) return;
+            const preview = $el('status-photo-preview');
+            preview.src = await resizeStatusPhoto(file, 360, 0.8);
+            preview.style.display = 'block';
+        });
+
+        /* ---------- wiring ---------- */
+
+        document.querySelectorAll('.rail-btn[data-view]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const view = btn.dataset.view;
+                if (view === 'settings') {
+                    window.location.href = '/settings';
+                    return;
+                }
+                switchView(view);
+            });
+        });
+
+        $el('logout-btn').addEventListener('click', () => { window.location.href = '/logout'; });
+        $el('refresh-btn').addEventListener('click', () => loadUsers());
+        $el('compose-btn').addEventListener('click', () => openDialog('new-chat-dialog'));
+        $el('new-group-btn').addEventListener('click', openGroupDialog);
+        $el('new-status-btn').addEventListener('click', () => openDialog('status-dialog'));
+        $el('dialog-new-group').addEventListener('click', openGroupDialog);
+        $el('create-group-btn').addEventListener('click', createGroup);
+        $el('save-status-btn').addEventListener('click', saveStatus);
+
+        $el('new-chat-username').addEventListener('input', (e) => {
+            const value = e.target.value.trim();
+            $el('start-chat-btn').disabled = !value || value.toLowerCase() === ME.toLowerCase();
+        });
+        $el('start-chat-btn').addEventListener('click', startNewChat);
+        $el('new-chat-username').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !$el('start-chat-btn').disabled) startNewChat();
+        });
+
+        document.querySelectorAll('[data-close]').forEach((btn) => {
+            btn.addEventListener('click', () => closeDialog(btn.dataset.close));
+        });
+        document.querySelectorAll('.dlg').forEach((dlg) => {
+            dlg.addEventListener('click', (e) => {
+                if (e.target === dlg) dlg.classList.remove('open');
+            });
+        });
+
+        $el('search-input').addEventListener('input', (e) => {
+            state.search = e.target.value.trim();
+            if (state.view === 'chats') renderUsers();
+            if (state.view === 'groups') loadGroups();
+        });
+
+        $el('back-btn').addEventListener('click', hideThread);
+
+        $el('star-btn').addEventListener('click', (e) => {
+            const btn = e.currentTarget;
+            const on = btn.classList.toggle('is-starred');
+            btn.innerHTML = '<i class="' + (on ? 'fas' : 'far') + ' fa-star"></i>';
+            toast(on ? 'Conversation starred' : 'Star removed', 'ok');
+        });
+
+        $el('call-btn').addEventListener('click', () => toast('Voice calls are not part of this build yet', 'err'));
+        $el('video-btn').addEventListener('click', () => toast('Video calls are not part of this build yet', 'err'));
+
+        $el('sticker-btn').addEventListener('click', toggleStickerPanel);
+        $el('attach-btn').addEventListener('click', () => $el('file-input').click());
+        $el('file-input').addEventListener('change', (e) => {
+            if (e.target.files.length) toast('File attachments are not supported yet', 'err');
+            e.target.value = '';
+        });
+
+        $el('composer').addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendMessage();
+        });
+
+        const input = $el('message-input');
+        input.addEventListener('input', () => {
+            autoGrow();
+            updateSendState();
+            notifyTyping();
+        });
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessageDirect();
+            }
+        });
+
+        async function sendMessage() { return sendMessageDirect(); }
+
+        /* ---------- boot ---------- */
+
+        $el('conv-avatar').style.display = 'none';
+        ['star-btn', 'call-btn', 'video-btn'].forEach((id) => { $el(id).disabled = true; });
+        buildStickerPanel();
+        loadUsers();
+        setInterval(() => {
+            if (state.view === 'chats' && !state.search) renderUsers();
+        }, 15000);
+        setInterval(pollTyping, 2000);
+    })();
+    </script>
+</body>
+</html>

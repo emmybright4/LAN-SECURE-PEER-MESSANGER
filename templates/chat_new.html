@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAN Secure Peer Messenger - {{ username }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100vh; overflow: hidden; }
+        .app-container { display: flex; height: 100vh; max-width: 1600px; margin: 0 auto; background: white; }
+        .sidebar { width: 380px; background: #f8f9fa; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; }
+        .sidebar-header { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; padding: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: white; color: #4CAF50; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .sidebar-tabs { display: flex; background: white; border-bottom: 1px solid #e0e0e0; }
+        .tab-btn { flex: 1; padding: 0.75rem; background: none; border: none; cursor: pointer; font-weight: 600; color: #666; position: relative; }
+        .tab-btn.active { color: #4CAF50; }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: #4CAF50; }
+        .tab-content { flex: 1; overflow-y: auto; display: none; }
+        .tab-content.active { display: block; }
+        .section-header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: white; border-bottom: 1px solid #e0e0e0; }
+        .icon-btn { background: none; border: none; color: #4CAF50; cursor: pointer; font-size: 1.2rem; }
+        .list-item { padding: 0.75rem 1rem; background: white; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; }
+        .list-item:hover { background: #f0f8ff; }
+        .item-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 600; }
+        .item-subtext { font-size: 0.8rem; color: #666; }
+        .main-chat { flex: 1; display: flex; flex-direction: column; background: #e5ddd5; }
+        .chat-header { background: #f8f9fa; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e0e0e0; }
+        .chat-header-info { display: flex; align-items: center; gap: 0.75rem; }
+        .action-btn { background: none; border: none; color: #4CAF50; font-size: 1.3rem; cursor: pointer; padding: 0.5rem; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 1rem; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%23e5ddd5" width="100" height="100"/></svg>'); }
+        .message { max-width: 65%; margin-bottom: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 8px; }
+        .message.sent { background: #dcf8c6; margin-left: auto; }
+        .message.received { background: white; margin-right: auto; }
+        .message-sender { font-weight: 600; font-size: 0.8rem; color: #4CAF50; }
+        .message-time { font-size: 0.7rem; color: #666; text-align: right; }
+        .input-area { background: #f8f9fa; padding: 0.75rem; display: flex; gap: 0.5rem; }
+        .message-input { flex: 1; padding: 0.75rem 1rem; border: none; border-radius: 25px; outline: none; }
+        .send-btn { width: 45px; height: 45px; border-radius: 50%; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 12px; width: 90%; max-width: 500px; }
+        .modal-header { padding: 1rem; background: linear-gradient(135deg, #4CAF50, #45a049); color: white; display: flex; justify-content: space-between; border-radius: 12px 12px 0 0; }
+        .modal-body { padding: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; border: 2px solid #e0e0e0; border-radius: 8px; }
+        .btn { padding: 0.75rem 1.5rem; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; width: 100%; }
+        .call-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; }
+        .call-modal.active { display: flex; flex-direction: column; }
+        .call-videos { flex: 1; display: flex; gap: 1rem; padding: 1rem; }
+        .video-container { flex: 1; background: #333; position: relative; }
+        .video-container video { width: 100%; height: 100%; object-fit: cover; }
+        .call-controls { padding: 2rem; display: flex; justify-content: center; gap: 1rem; }
+        .call-btn { width: 60px; height: 60px; border-radius: 50%; border: none; font-size: 1.5rem; color: white; cursor: pointer; }
+        .call-btn.end { background: #f44336; }
+        .call-btn.mute, .call-btn.video { background: #666; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-avatar">{{ username[0].upper() }}</div>
+                <div style="flex: 1;"><div style="font-weight: 600;">{{ username }}</div><div style="font-size: 0.8rem;">LAN Secure Messenger</div></div>
+                <button class="icon-btn" style="color: white;" onclick="window.location.href='/logout'"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+            <div class="sidebar-tabs">
+                <button class="tab-btn active" onclick="switchTab('chats')"><i class="fas fa-comments"></i> Chats</button>
+                <button class="tab-btn" onclick="switchTab('groups')"><i class="fas fa-users"></i> Groups</button>
+                <button class="tab-btn" onclick="switchTab('status')"><i class="fas fa-circle-notch"></i> Status</button>
+                <button class="tab-btn" onclick="switchTab('calls')"><i class="fas fa-phone"></i> Calls</button>
+            </div>
+            <div id="tab-chats" class="tab-content active">
+                <div class="section-header"><h3>Direct Messages</h3><button class="icon-btn" onclick="refreshUsers()"><i class="fas fa-sync"></i></button></div>
+                <div id="users-list"></div>
+            </div>
+            <div id="tab-groups" class="tab-content">
+                <div class="section-header"><h3>Groups</h3><button class="icon-btn" onclick="document.getElementById('groupModal').classList.add('active'); refreshUsersForGroup();"><i class="fas fa-plus"></i></button></div>
+                <div id="groups-list"></div>
+            </div>
+            <div id="tab-status" class="tab-content">
+                <div class="section-header"><h3>Status</h3><button class="icon-btn" onclick="document.getElementById('statusModal').classList.add('active')"><i class="fas fa-plus"></i></button></div>
+                <div style="padding: 1rem;" id="status-list"></div>
+            </div>
+            <div id="tab-calls" class="tab-content">
+                <div class="section-header"><h3>Call History</h3></div>
+                <div id="calls-list"></div>
+            </div>
+        </div>
+        <div class="main-chat">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="item-avatar" id="chat-avatar">?</div>
+                    <div><div style="font-weight: 600;" id="chat-name"

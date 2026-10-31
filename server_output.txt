@@ -1,0 +1,102 @@
+[APP] Data path: C:\Users\EVOTECH\Desktop\LAN SECURE PEER MESSANGER V4\data
+[APP] Application path: C:\Users\EVOTECH\Desktop\LAN SECURE PEER MESSANGER V4
+[DATABASE] Initializing database tables...
+[DATABASE] All tables created
+[DATABASE] Checking schema...
+[DATABASE] Current columns in messages: ['id', 'sender', 'recipient', 'message', 'is_encrypted', 'timestamp', 'client_msg_id']
+[DATABASE] Adding missing users.avatar column...
+[DATABASE] Added users.avatar column
+[DATABASE] Adding missing users.bio column...
+[DATABASE] Added users.bio column
+[DATABASE] Schema verified and fixed
+[DATABASE] Initialized: C:\Users\EVOTECH\Desktop\LAN SECURE PEER MESSANGER V4\data\chat.db
+[SECURITY] Initialized with path: C:\Users\EVOTECH\Desktop\LAN SECURE PEER MESSANGER V4\data
+[NETWORK] Initialized on 172.30.31.141
+[NETWORK] Starting network services...
+[NETWORK] Sockets created - UDP:6666 TCP:6667
+[NETWORK] UDP listener started
+[NETWORK] TCP listener started on port 6667
+[NETWORK] Discovery broadcaster started
+[NETWORK] All threads started successfully
+[APP] All components initialized successfully
+
+============================================================
+ðŸ”’ SECURELOCAL CHAT - RUNNING
+============================================================
+Network Features:
+â€¢ UDP Discovery: Port 6666
+â€¢ TCP Messaging: Port 6667
+â€¢ Network Running: True
+============================================================
+ðŸ“± Opening browser automatically...
+ðŸŒ Web Interface: http://localhost:5000
+============================================================
+ðŸ“ Debug endpoints available:
+   â€¢ /api/debug/network_status
+   â€¢ /api/debug/check_connection?ip=XXX.XXX.XXX.XXX
+============================================================
+â„¹ï¸  App is running in background
+â„¹ï¸  Close this window to stop the server
+============================================================
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.30.31.141:5000
+Press CTRL+C to quit
+127.0.0.1 - - [31/Oct/2026 15:00:31] "GET / HTTP/1.1" 302 -
+127.0.0.1 - - [31/Oct/2026 15:00:31] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:00:32] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [31/Oct/2026 15:01:00] "POST /login HTTP/1.1" 302 -
+127.0.0.1 - - [31/Oct/2026 15:01:01] "POST /api/upload-avatar HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:01:01] "GET /api/user-profile/dude_a HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:01:01] "GET /api/messages?with=dude_a HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:01:01] "POST /api/typing HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:01:02] "GET /api/typing/status HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:01:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:01:35] "GET /health HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:02:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:02:30] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:02:33] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:02:57] "POST /register HTTP/1.1" 302 -
+127.0.0.1 - - [31/Oct/2026 15:02:57] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:02:59] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:00] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:25] "POST /register HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:35] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:36] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:37] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:38] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:03:59] "POST /register HTTP/1.1" 302 -
+127.0.0.1 - - [31/Oct/2026 15:03:59] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:03] "POST /login HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:10] "POST /login HTTP/1.1" 302 -
+127.0.0.1 - - [31/Oct/2026 15:04:11] "GET /chat HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:11] "GET /static/chat.css HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:11] "GET /static/style.css HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:11] "GET /api/users HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:11] "GET /api/conversations HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:11] "GET /api/user-profile/liam HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:14] "GET /settings HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:14] "GET /api/user-profile/liam HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:16] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:21] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:26] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:31] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:36] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:37] "GET /chat HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:37] "GET /static/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [31/Oct/2026 15:04:37] "GET /static/chat.css HTTP/1.1" 304 -
+127.0.0.1 - - [31/Oct/2026 15:04:37] "GET /api/users HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:37] "GET /api/conversations HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:37] "GET /api/user-profile/liam HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:04:37] "GET /api/user-profile/Emmy%20Bright HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:05:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:06:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:07:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:08:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:09:23] "GET /api/network/quality HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2026 15:10:23] "GET /api/network/quality HTTP/1.1" 200 -
